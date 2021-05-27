@@ -50,5 +50,18 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+  <key>NSBluetoothPeripheralUsageDescription</key>
+  <string>Bluetooth Required for Microphone and Speech Detection.</string>
+  <key>NSBluetoothAlwaysUsageDescription</key>
+  <string>Bluetooth Required for Microphone and Speech Detection.</string>
+  <key>NSMicrophoneUsageDescription</key>
+    <string>Microphone should be used for using wakeword</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Speech to Text Wakeword</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>audio</string>
+        <string>fetch</string>
+    </array>
 </dict>
 </plist>

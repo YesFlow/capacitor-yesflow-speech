@@ -1,10 +1,3 @@
-import Foundation
-
-@objc public class CapacitorYesflowSpeech: NSObject {
-
-}
-
-
 import AVFoundation
 import Capacitor
 import Speech
