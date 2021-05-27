@@ -1,0 +1,7 @@
+{
+  "name": "speechui-test",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
