@@ -58,6 +58,7 @@ export enum SpeechState {
 }
 
 export interface CapacitorYesflowSpeechPlugin {
+  echo(options: { value: string }): Promise<{ value: string }>;
   available(): Promise<{ available: boolean }>;
   getCurrentState(): Promise<{ state: string }>;
   getLastResult(): Promise<{ result: any }>;

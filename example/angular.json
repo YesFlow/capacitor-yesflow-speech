@@ -33,6 +33,10 @@
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
             "scripts": [],
+            "allowedCommonJsDependencies": [
+              "lodash",
+              "uuid"
+            ],
             "aot": false,
             "vendorChunk": true,
             "extractLicenses": false,

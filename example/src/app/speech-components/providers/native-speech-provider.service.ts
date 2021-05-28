@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
-import { SpeechState, YesflowSpeechUI} from 'node_modules/@capacitor-yesflow/speechui';
+import { SpeechState, CapacitorYesflowSpeech} from 'node_modules/@capacitor-yesflow/speech';
 
 import { BehaviorSubject, of } from 'rxjs';
 
@@ -49,23 +49,23 @@ export class NativeSpeechProviderService {
     this.checkPermissions().then(()=>{
       this.toggleShouldListenOn();
       const options = this.getDefaultSpeechOptions();
-      YesflowSpeechUI.start(options);
+      CapacitorYesflowSpeech.start(options);
     })
   }
 
   async stopRecording() {
     this.shouldListen$?.next(null);
     this.updateSpeechState(SpeechState.STATE_STOPPING);
-    return await YesflowSpeechUI.stop();
+    return await CapacitorYesflowSpeech.stop();
   }
 
   addListeners() {
     console.log('Add SpeechListeners');
-    YesflowSpeechUI.addListener('speechResults', (data: any) => {
+    CapacitorYesflowSpeech.addListener('speechResults', (data: any) => {
       this.handleSpeechResults(data);
     });
 
-    YesflowSpeechUI.addListener('speechStateUpdate', (data: any) => {
+    CapacitorYesflowSpeech.addListener('speechStateUpdate', (data: any) => {
       this.handleSpeechStateUpdate(data);
     });
 
@@ -144,17 +144,17 @@ export class NativeSpeechProviderService {
     this.speechResults$.next(this.speechResults);
   }
   removeListeners() {
-    YesflowSpeechUI.removeAllListeners();
+    CapacitorYesflowSpeech.removeAllListeners();
   }
 
 
   async checkPermissions() {
-    const available = await YesflowSpeechUI.available();
+    const available = await CapacitorYesflowSpeech.available();
     if (!available) {return false}
-    const hasPermissions = await YesflowSpeechUI.hasPermission();
+    const hasPermissions = await CapacitorYesflowSpeech.hasPermission();
     if (!hasPermissions) {
-      const request = await YesflowSpeechUI.requestPermission();
-      const permissionCheck = await YesflowSpeechUI.hasPermission();
+      const request = await CapacitorYesflowSpeech.requestPermission();
+      const permissionCheck = await CapacitorYesflowSpeech.hasPermission();
       return permissionCheck.permission;
     } else {
       return true;

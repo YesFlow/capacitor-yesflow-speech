@@ -1,6 +1,6 @@
 {
   "name": "@capacitor-yesflow/speech",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "Used to bridge speech to text for web, ios, and android",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -75,7 +75,8 @@
   "dependencies": {
     "@capacitor/android": "^3.0.0",
     "@capacitor/filesystem": "^1.0.0",
-    "@capacitor/ios": "^3.0.0"
+    "@capacitor/ios": "^3.0.0",
+    "d3": "^6.7.0"
   },
   "homepage": "https://github.com/YesFlow/capacitor-yesflow-speech#readme",
   "directories": {

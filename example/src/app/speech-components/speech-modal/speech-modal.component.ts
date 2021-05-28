@@ -1,6 +1,6 @@
 import { Component, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { SpeechResult, SpeechState, YesflowSpeechUI } from 'node_modules/@capacitor-yesflow/speechui';
+import { SpeechResult, SpeechState, CapacitorYesflowSpeech } from '@capacitor-yesflow/speech';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { NativeSpeechProviderService } from '../providers/native-speech-provider.service';

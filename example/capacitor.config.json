@@ -6,7 +6,9 @@
   "npmClient": "npm",
   "bundledWebRuntime": false,
   "server": {
-    "cleartext": true
+    "cleartext": true,
+    "originalCleartext": true,
+    "url": "http://localhost:8100"
   },
   "plugins": {
     "Keyboard": {

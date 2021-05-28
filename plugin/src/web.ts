@@ -30,6 +30,9 @@ export class CapacitorYesflowSpeechWeb
       false,
     );
   }
+  async echo(options: { value: string; }): Promise<{ value: string; }> {
+    return {value: options.value}
+  }
   async available(): Promise<{ available: boolean }> {
     return { available: true };
     //   throw new Error('Method not implemented.');
