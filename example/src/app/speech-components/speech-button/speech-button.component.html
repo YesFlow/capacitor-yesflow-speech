@@ -1,0 +1,6 @@
+  <!-- fab placed to the (vertical) center and start -->
+  <ion-fab vertical="{{inputVertical}}" horizontal="{{inputHorizontal}}" slot="{{inputSlot}}">
+    <ion-fab-button [disabled]="micDisabled">
+      <ion-icon name="mic" (click)="onRecordClick($event)"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>

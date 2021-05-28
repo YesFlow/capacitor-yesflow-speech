@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CapacitorYesflowSpeech } from '@yesflow/speech';
+import { CapacitorYesflowSpeech } from '@capacitor-yesflow/speech';
 
 @Component({
   selector: 'app-root',

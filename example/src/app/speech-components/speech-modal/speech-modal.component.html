@@ -1,0 +1,66 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Speak
+    </ion-title>
+    <ion-item [hidden]="!showTimer" slot="secondary">
+      <app-speech-timer #speechTimer [instanceId]="this.speechSessionId"></app-speech-timer>
+    </ion-item>
+    <ion-item slot="end">
+      <ion-label *ngIf="currentState" class="ion-text-wrap">{{currentState}}</ion-label>
+    </ion-item>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ng-container *ngIf="!hideLoader">
+    <ion-item>
+      <ion-label>Loading...</ion-label>
+      <ion-spinner></ion-spinner>
+    </ion-item>
+  </ng-container>
+  <ng-container *ngIf="hideLoader">
+    <ion-list>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>
+          <div *ngIf="resultsTextArray$ | async as itemCurrentTextArray">
+            <span *ngFor="let text of itemCurrentTextArray">{{ text }}&nbsp;</span>
+          </div>
+        </strong>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap" style="color: grey;">
+          <div *ngIf="currentText$ | async as itemCurrentText">
+              <span style="display:inline-block;">{{ itemCurrentText }}</span>
+          </div>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+</ion-content>
+<ion-footer class="ion-padding">
+  <ion-toolbar>
+    <app-mic-visualizer *ngIf="!showStartRecordingButton"></app-mic-visualizer>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="undoLast()" [disabled]=""><ion-icon name="arrow-undo"></ion-icon>Undo</ion-button>
+      <ion-button (click)="addCurrentText()" [disabled]=""><ion-icon name="swap-vertical-outline"></ion-icon>Add</ion-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()" [disabled]=""><ion-icon name="trash-bin-outline"></ion-icon>Cancel</ion-button>
+      <ion-button (click)="sendResults()" [disabled]=""><ion-icon name="send"></ion-icon>Send</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+
+</ion-footer>
+<ion-fab vertical="bottom" horizontal="center" slot="fixed">
+  <ion-fab-button>
+    <ion-icon [name]="showStartRecordingButton ? 'mic' : 'stop-circle'" (click)="toggleRecording()"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

@@ -3,21 +3,21 @@ import Capacitor
 import Speech
 
 @objc public class CapacitorYesflowSpeech: NSObject, SFSpeechRecognizerDelegate {
-    let audioEngine = AVAudioEngine()
-    let speechRecognizer = SFSpeechRecognizer()
-    let recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-    let recognitionTask = SFSpeechRecognitionTask()
-
-    let currentState : String?
-    let lastResult : Any?
-    let isListening: Bool = false
+    public weak var plugin: CAPPlugin?
+    var audioEngine : AVAudioEngine?
+    var speechRecognizer : SFSpeechRecognizer?
+    var recognitionRequest : SFSpeechAudioBufferRecognitionRequest?
+    var recognitionTask : SFSpeechRecognitionTask?
+    
+    var currentState : String?
+    var lastResult : Any?
+    var isListening: Bool = false
 
     var calls: [CAPPluginCall] = []
 
     override init() {
         super.init()
-        self.audioEngine.delegate = self
-        self.speechRecognizer.delagate = self
+        self.speechRecognizer?.delegate = self
     }
 
     @objc public func echo(_ value: String) -> String {
@@ -28,11 +28,11 @@ import Speech
         return self.currentState!
     }
     
-    @objc public func getLastResult() -> String {
-        return self.lastResult!
+    @objc public func getLastResult() -> Any? {
+        return self.lastResult
     }
     
-    @objc public func available() -> Bool {
+    @objc public func available(_ call: CAPPluginCall) -> Void {
         // Configure the SFSpeechRecognizer object already
         // stored in a local member variable.
         // Asynchronously make the authorization request.
@@ -42,31 +42,46 @@ import Speech
             OperationQueue.main.addOperation {
                 switch authStatus {
                 case .authorized:
-  
+                    call.resolve([
+                        "permission": true
+                    ])
+                    self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_READY);
                 case .denied:
-                    return false;
+                    call.resolve([
+                        "permission": false
+                    ])
+                    self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_NOPERMISSIONS);
                 case .restricted:
-                    return false;
+                    call.resolve([
+                        "permission": false
+                    ])
+                    self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_NOPERMISSIONS);
                 case .notDetermined:
-                    return false;
+                    call.resolve([
+                        "permission": false
+                    ])
+                    self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_NOPERMISSIONS);
                 default:
-                    return false;
+                    call.resolve([
+                        "permission": false
+                    ])
+                    self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_NOPERMISSIONS);
                 }
             }
         }
     }
     
-    @objc public func restart() -> Void {
+    @objc public func restart(_ call: CAPPluginCall) -> Void {
         if (self.audioEngine != nil) {
-            self.handleStateUpdate(state: self.STATE_RESTARTING);
+            self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_RESTARTING);
             self.stopListening()
         }
-        self.resolveCurrentCall();
+        self.resolveCurrentCall(data: nil)
     }
 
-    @objc public func start() -> Void {
+    @objc public func start(_ call: CAPPluginCall, language: String, maxResults: Int, partialResults: Bool ) throws {
         if (self.audioEngine != nil) {
-            self.handleStateUpdate(state: self.STATE_RESTARTING);
+            self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_RESTARTING);
             self.stopListening()
         }
         guard !isListening else {return}
@@ -74,20 +89,18 @@ import Speech
 
         let status: SFSpeechRecognizerAuthorizationStatus = SFSpeechRecognizer.authorizationStatus()
         if status != SFSpeechRecognizerAuthorizationStatus.authorized {
-            self.rejectCurrentCall(self.MESSAGE_MISSING_PERMISSION)
+            self.rejectCurrentCall(reason: CapacitorYesflowSpeechPlugin.MESSAGE_MISSING_PERMISSION)
             return
         }
 
         AVAudioSession.sharedInstance().requestRecordPermission { (granted) in
             if !granted {
-                self.handleStateUpdate(state: self.STATE_NOPERMISSIONS);
-                self.rejectCurrentCall(self.MESSAGE_ACCESS_DENIED_MICROPHONE)
+                self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_NOPERMISSIONS);
+                self.rejectCurrentCall(reason: CapacitorYesflowSpeechPlugin.MESSAGE_ACCESS_DENIED_MICROPHONE)
                 return
             }
 
-            let language: String = call.getString("language") ?? "en-US"
-            let maxResults : Int = call.getInt("maxResults") ?? self.DEFAULT_MATCHES
-            let partialResults : Bool = call.getBool("partialResults") ?? self.DEFAULT_PARTIAL_RESULTS
+
 
             if (self.recognitionTask != nil) {
                 self.recognitionTask?.cancel()
@@ -102,9 +115,9 @@ import Speech
                 try audioSession.setCategory(AVAudioSession.Category.playAndRecord, options: AVAudioSession.CategoryOptions.defaultToSpeaker)
                 try audioSession.setMode(AVAudioSession.Mode.default)
                 try audioSession.setActive(true, options: AVAudioSession.SetActiveOptions.notifyOthersOnDeactivation)
-                self.handleStateUpdate(state: self.STATE_READY);
+                self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_READY);
             } catch {
-                self.handleStateUpdate(state: self.STATE_ERROR);
+                self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_ERROR);
             }
 
             self.recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
@@ -120,7 +133,7 @@ import Speech
 
             self.recognitionTask = self.speechRecognizer?.recognitionTask(with: self.recognitionRequest!, resultHandler: { (result, error) in
                 if (result != nil) {
-                    self.handleStateUpdate(state: self.STATE_LISTENING);
+                    self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_LISTENING);
                     let resultArray: NSMutableArray = NSMutableArray()
                     var counter: Int = 0
 
@@ -139,7 +152,7 @@ import Speech
                     );
         
                     if result!.isFinal {
-                        self.handleStateUpdate(state: self.STATE_STOPPED);
+                        self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_STOPPED);
                         self.handleNotifySpeechFinalResult()
                         self.audioEngine!.stop()
                         self.audioEngine?.inputNode.removeTap(onBus: 0)
@@ -153,8 +166,8 @@ import Speech
                     self.recognitionRequest = nil
                     self.recognitionTask = nil
                     self.handleNotifySpeechFinalResult()
-                    self.resolveCurrentCall(["errorMessage": error!.localizedDescription])
-                    self.handleStateUpdate(state: self.STATE_ERROR);
+                    self.resolveCurrentCall(data: ["errorMessage": error!.localizedDescription])
+                    self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_ERROR);
                 }
             })
 
@@ -164,21 +177,21 @@ import Speech
 
             self.audioEngine?.prepare()
             do {
-                self.handleStateUpdate(state: self.STATE_STARTING);
+                self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_STARTING)
                 try self.audioEngine?.start()
-                self.handleStateUpdate(state: self.STATE_STARTED);
-                self.resolveCurrentCall();
+                self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_STARTED);
+                self.resolveCurrentCall(data: nil)
             } catch {
                 // Try it one More Time After 2 Seconds
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { // Change `2.0` to the desired number of seconds.
                    // Code you want to be delayed
                     do {
-                        self.handleStateUpdate(state: self.STATE_RESTARTING);
+                        self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_RESTARTING);
                         try self.audioEngine?.start()
-                        self.handleStateUpdate(state: self.STATE_STARTED);
-                        self.resolveCurrentCall();
+                        self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_STARTED);
+                        self.resolveCurrentCall(data: nil);
                     } catch {
-                        self.rejectCurrentCall("Error " + self.MESSAGE_UNKNOWN)
+                        self.rejectCurrentCall(reason: "Error " + CapacitorYesflowSpeechPlugin.MESSAGE_UNKNOWN)
                     }
                 }
                 
@@ -186,33 +199,34 @@ import Speech
         }
     }
 
-    @objc public func stop() -> Void {
+    @objc public func stop(_ call: CAPPluginCall) -> Void {
         self.stopListening()
+        call.resolve()
     }
 
-    @objc public func getSupportedLanguages() {
+    @objc public func getSupportedLanguages() -> NSMutableArray {
         let supportedLanguages : Set<Locale>! = SFSpeechRecognizer.supportedLocales() as Set<Locale>
         let languagesArr : NSMutableArray = NSMutableArray()
 
         for lang: Locale in supportedLanguages {
             languagesArr.add(lang.identifier)
         }
-        return languagesAr;
+        return languagesArr
     }
 
-    @objc public func hasPermission() -> Bool {
+    @objc public func hasPermission() -> Void {
         let status: SFSpeechRecognizerAuthorizationStatus = SFSpeechRecognizer.authorizationStatus()
         let speechAuthGranted : Bool = (status == SFSpeechRecognizerAuthorizationStatus.authorized)
 
         if (!speechAuthGranted) {
-            return false
+            return
         }
-        AVAudioSession.sharedInstance().requestRecordPermission { (granted: Bool) in
-            return granted
+        return AVAudioSession.sharedInstance().requestRecordPermission { (granted: Bool) in
+           
         }
     }
 
-    @objc public func requestPermission() -> Bool {
+    @objc public func requestPermission(_ call: CAPPluginCall) -> Void {
         SFSpeechRecognizer.requestAuthorization { (status: SFSpeechRecognizerAuthorizationStatus) in
             DispatchQueue.main.async {
                 var speechAuthGranted: Bool = false
@@ -222,30 +236,30 @@ import Speech
                     break
 
                 case SFSpeechRecognizerAuthorizationStatus.denied:
-                    return false
+                    call.reject(CapacitorYesflowSpeechPlugin.MESSAGE_ACCESS_DENIED)
                     break
 
                 case SFSpeechRecognizerAuthorizationStatus.restricted:
-                    return false
+                    call.reject(CapacitorYesflowSpeechPlugin.MESSAGE_RESTRICTED)
                     break
 
                 case SFSpeechRecognizerAuthorizationStatus.notDetermined:
-                    return false
+                    call.reject(CapacitorYesflowSpeechPlugin.MESSAGE_NOT_DETERMINED)
                     break
 
                 @unknown default:
-                    return false
+                    call.reject(CapacitorYesflowSpeechPlugin.MESSAGE_UNKNOWN)
                 }
 
                 if (!speechAuthGranted) {
-                    return false;
+                    return;
                 }
 
                 AVAudioSession.sharedInstance().requestRecordPermission { (granted: Bool) in
                     if (granted) {
-                        return true;
+                        call.resolve()
                     } else {
-                        return false;
+                        call.reject(CapacitorYesflowSpeechPlugin.MESSAGE_ACCESS_DENIED_MICROPHONE)
                     }
                 }
             }
@@ -255,20 +269,24 @@ import Speech
     
     @objc private func stopListening() {
         guard isListening else {return}
-        self.audioEngine?.stop()
-        self.audioEngine?.inputNode.removeTap(onBus: 0)
-        // Indicate that the audio source is finished and no more audio will be appended
-        recognitionRequest?.endAudio()
-        recognitionRequest = nil
-        recognitionTask = nil
-        isListening = false
+        DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async {
+            if self.audioEngine!.isRunning {
+                self.audioEngine?.stop()
+                self.audioEngine?.inputNode.removeTap(onBus: 0)
+                // Indicate that the audio source is finished and no more audio will be appended
+                self.recognitionRequest?.endAudio()
+                self.recognitionRequest = nil
+                self.recognitionTask = nil
+                self.isListening = false
+            }
+        }
     }
 
     @objc private func handleStateUpdate(state: String) {
         let result = [
             "state": state,
         ] as [String : Any];
-        self.notifyListeners("speechStateUpdate", data: result, retainUntilConsumed: true)
+        self.plugin?.notifyListeners("speechStateUpdate", data: result, retainUntilConsumed: true)
     }
 
     @objc private func handleNotifySpeechResult(resultText: Any, resultArray: NSMutableArray?, isFinal: Bool, isError: Bool, errorMessage: String?) {
@@ -280,7 +298,7 @@ import Speech
             "errorMessage": errorMessage!
         ] as [String : Any];
         self.lastResult = result;
-        self.notifyListeners("speechResults", data: result, retainUntilConsumed: true)
+        self.plugin?.notifyListeners("speechResults", data: result, retainUntilConsumed: true)
     }
     
     @objc private func handleNotifySpeechFinalResult() {
@@ -302,21 +320,27 @@ import Speech
             errorMessage: errorMessage ?? "An Error Occured")
     }
 
-    @objc private func rejectCurrentCall(data: Any?) {
+    @objc private func rejectCurrentCall(reason: String?) {
         guard let call = calls.first else {
             return
         }
-        call.reject(data)
+        call.reject(reason ?? "unknown")
         calls.removeFirst()
     }
 
-    @objc private func resolveCurrentCall(data: Any?) {
+    @objc private func resolveCurrentCall(data: Dictionary<String, Any>?) {
         guard let call = calls.first else {
             return
         }
-        call.resolve(data)
+        call.resolve()
         calls.removeFirst()
     }
+    
+    private func getRequestDataAsJson(_ data: [String: Any]) throws -> Data? {
+      let jsonData = try JSONSerialization.data(withJSONObject: data)
+      return jsonData
+    }
+    
 
     // @objc private func resolveCurrentCall() {
     //     do {
