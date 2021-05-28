@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { NativeSpeechProviderService } from '../providers/native-speech-provider.service';
 import { SpeechTimerComponent } from '../speech-timer/speech-timer.component';
-import * as uuid from 'uuid';
+import {v4} from 'uuid';
 
 
 
@@ -17,6 +17,7 @@ import * as uuid from 'uuid';
 export class SpeechModalComponent implements OnInit, OnDestroy {
   @Input('speechSessionId') speechSessionId:any = '';
   showStartRecordingButton: any;
+  showVisualizer: any;
   showTimer:any;
   currentState: SpeechState = SpeechState.STATE_UNKNOWN;
   hideLoader: any;
@@ -35,8 +36,8 @@ export class SpeechModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(){
-    console.log('SpeechModal: NgOnInit');
-    this.speechSessionId = this.speechSessionId || uuid.v4();
+    this.speechSessionId = this.speechSessionId || v4();
+    console.log('SpeechModal: NgOnInit', this.speechSessionId);
     this.showTimer = true;
     this.unSubscribeToAllSpeechState();
     this.clearCurrentVariables();

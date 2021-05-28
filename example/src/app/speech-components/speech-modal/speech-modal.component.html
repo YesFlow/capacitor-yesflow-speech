@@ -12,7 +12,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content>
   <ng-container *ngIf="!hideLoader">
     <ion-item>
       <ion-label>Loading...</ion-label>
@@ -39,11 +39,15 @@
       </ion-item>
     </ion-list>
   </ng-container>
-
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button>
+      <ion-icon [name]="showStartRecordingButton ? 'mic' : 'stop-circle'" (click)="toggleRecording()"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
 <ion-footer class="ion-padding">
   <ion-toolbar>
-    <app-mic-visualizer *ngIf="!showStartRecordingButton"></app-mic-visualizer>
+    <app-mic-visualizer *ngIf="showVisualizer"></app-mic-visualizer>
   </ion-toolbar>
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -56,11 +60,5 @@
       <ion-button (click)="sendResults()" [disabled]=""><ion-icon name="send"></ion-icon>Send</ion-button>
     </ion-buttons>
   </ion-toolbar>
-
-
 </ion-footer>
-<ion-fab vertical="bottom" horizontal="center" slot="fixed">
-  <ion-fab-button>
-    <ion-icon [name]="showStartRecordingButton ? 'mic' : 'stop-circle'" (click)="toggleRecording()"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
+
