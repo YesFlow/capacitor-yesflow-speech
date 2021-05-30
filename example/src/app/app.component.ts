@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CapacitorYesflowSpeech } from '@capacitor-yesflow/speech';
+import { CapacitorYesflowWakeWord } from '@capacitor-yesflow/wakeword';
 
 @Component({
   selector: 'app-root',
@@ -12,10 +13,16 @@ export class AppComponent implements OnInit {
   }
   ngOnInit() {
     this.runYesflowSpeechEcho();
+    this.runYesflowWakeWordEcho();
   }
 
   async runYesflowSpeechEcho() {
-    const echoResult = await CapacitorYesflowSpeech.echo;
-    console.log('AppComponent: CapacitorYesflowSpeechPlugin: Echo', echoResult)
+    const result = await CapacitorYesflowSpeech.echo({value: 'test'});
+    console.log('AppComponent: CapacitorYesflowSpeechPlugin: Echo', result)
+  }
+
+  async runYesflowWakeWordEcho() {
+    const result = await CapacitorYesflowWakeWord.echo({value: 'test'});
+    console.log('AppComponent: CapacitorYesflowWakeWordPlugin: Echo', result)
   }
 }

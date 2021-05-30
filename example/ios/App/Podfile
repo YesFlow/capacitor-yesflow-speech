@@ -9,8 +9,8 @@ install! 'cocoapods', :disable_input_output_paths => true
 def capacitor_pods
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
-  pod 'CapacitorYesflowSpeech', :path => '../../node_modules/@capacitor-yesflow/speech'
-  pod 'CapacitorYesflowWakeword', :path => '../../node_modules/@capacitor-yesflow/wakeword'
+  pod 'CapacitorYesflowSpeech', :path => '../../../plugin-yesflow-speech'
+  pod 'CapacitorYesflowWakeword', :path => '../../../plugin-yesflow-wakeword'
   pod 'CapacitorFilesystem', :path => '../../node_modules/@capacitor/filesystem'
 end
 

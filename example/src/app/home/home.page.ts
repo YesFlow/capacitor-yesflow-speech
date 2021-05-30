@@ -15,11 +15,8 @@ import { SpeechButtonComponent } from '../speech-components/speech-button/speech
 export class HomePage  implements OnInit{
   data:any;
   isChunkLoaded: boolean = false
-  keywordDetection: Subscription;
-  inferenceDetection: Subscription;
-  listeningDetection: Subscription;
-  errorDetection: Subscription;
-  isErrorDetection: Subscription;
+  wakeWordStateSubscription: any;
+
   isError: boolean = false
   error: Error | string | null = null
   isListening: boolean | null = null
@@ -44,22 +41,21 @@ export class HomePage  implements OnInit{
   constructor() {
     this.runYesflowSpeechEcho();
     this.runYesflowWakeWordEcho();
-    this.subscribeToWakeWord();
   }
+
   ngOnInit() {
     this.loadWakeWord();
   }
 
   async loadWakeWord() {
-    const picovoiceFactoryEn = (await import('@picovoice/picovoice-web-en-worker')).PicovoiceWorkerFactory
-    this.isChunkLoaded = true
-    console.info("Picovoice EN is loaded.")
-
+    // const picovoiceFactoryEn = (await import('@picovoice/picovoice-web-en-worker')).PicovoiceWorkerFactory
+    // this.isChunkLoaded = true
     try {
-      await CapacitorYesflowWakeWord.init(picovoiceFactoryEn, this.picovoiceServiceArgs)
-      console.info("Picovoice is ready!")
+      await CapacitorYesflowWakeWord.initWakeWord()
+      console.info("CapacitorYesflowWakeWord is ready!")
       this.isLoaded = true;
-      this.contextInfo = await CapacitorYesflowWakeWord.getContextInfo();
+      this.subscribeToWakeWordState();
+      // this.contextInfo = await CapacitorYesflowWakeWord.getContextInfo();
       console.info("Picovoice contextInfo", this.contextInfo);
     }
     catch (error) {
@@ -69,49 +65,55 @@ export class HomePage  implements OnInit{
     }
   }
 
-  async subscribeToWakeWord() {
-        // Subscribe to Porcupine keyword detections
-    // Store each detection so we can display it in an HTML list
-    console.log('CapacitorYesflowWakeWord.getKeyWordSubscription()', CapacitorYesflowWakeWord.getKeyWordSubscription())
-    this.keywordDetection = (await CapacitorYesflowWakeWord.getKeyWordSubscription()).subscribe(
-      keyword => {
-        this.detections = [...this.detections, keyword]
-        this.inference = null
-        this.speechButton.onRecordClick();
-        console.log('Keyword', keyword)
-      })
-
-    // Subscribe to Rhino inference detections for follow-on commands
-    this.inferenceDetection =  (await CapacitorYesflowWakeWord.getInterferanceSubscription()).subscribe(
-      inference => {
-        this.inference = inference
-        console.log('Inference', inference)
-      })
-
-    // Subscribe to listening, isError, and error message
-    this.listeningDetection = (await CapacitorYesflowWakeWord.getListeningSubscription()).subscribe(
-      listening => {
-        this.isListening = listening
-      })
-    this.errorDetection = (await CapacitorYesflowWakeWord.getErrorDetectionSubscription()).subscribe(
-      error => {
-        this.error = error
-      })
-    this.isErrorDetection = (await CapacitorYesflowWakeWord.getIsErrorDetectionSubscription()).subscribe(
-      isError => {
-        this.isError = isError
-      })
-  }
-
-  async picoTest() {
-    let engines = []; // list of voice processing web workers (see below)
-    let handle = await WebVoiceProcessor.init({
-      engines: engines,
-      start: false
+  subscribeToWakeWordState() {
+    console.log('Add WakeWordListeners');
+    CapacitorYesflowWakeWord.addListener('wakeWordStateUpdate', (event: any) => {
+      console.log('HandleWakeWordState', event);
     });
-    console.log('VoiceHandle: ', handle);
-    console.log('VoiceEngines: ', engines);
+
+    CapacitorYesflowWakeWord.addListener('wakeWordInferenceDetected', (data: any) => {
+      console.log('wakeWordInferenceDetected', event);
+    });
+
+    CapacitorYesflowWakeWord.addListener('wakeWordDetected', (data: any) => {
+      console.log('wakeWordDetected', event);
+    });
   }
+
+
+
+  public  async initWakeWord() {
+    await CapacitorYesflowWakeWord.initWakeWord(null, null);
+  }
+
+  public async start() {
+    await CapacitorYesflowWakeWord.start();
+  }
+
+  public  async pause() {
+    await CapacitorYesflowWakeWord.pause();
+  }
+
+  public async resume() {
+    await CapacitorYesflowWakeWord.resume();
+  }
+
+  public async release() {
+    await CapacitorYesflowWakeWord.release();
+  }
+
+
+
+  // async picoTest() {
+  //   let engines = []; // list of voice processing web workers (see below)
+  //   let handle = await WebVoiceProcessor.init({
+  //     engines: engines,
+  //     start: false
+  //   });
+  //   console.log('VoiceHandle: ', handle);
+  //   console.log('VoiceEngines: ', engines);
+  // }
+
 
   // async startSpeech() {
   //   const result = await CapacitorYesflowSpeech.;
@@ -122,19 +124,6 @@ export class HomePage  implements OnInit{
   //   const result = await CapacitorYesflowSpeech.stop;
   //   console.log('HomePage: CapacitorYesflowSpeechPlugin: StopSpeech', result)
   // }
-
-
-  public  async pause() {
-    await CapacitorYesflowWakeWord.pause();
-  }
-
-  public async resume() {
-    await CapacitorYesflowWakeWord.resume();
-  }
-
-  public async start() {
-    await CapacitorYesflowWakeWord.start();
-  }
 
 
   onSpeechResultsEvent(data:any) {

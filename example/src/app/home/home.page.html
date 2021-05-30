@@ -7,24 +7,20 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
   <div id="container">
     <strong>Ready to Speak?</strong>
     <ion-textarea [value]="data" rows="20" cols="20" placeholder="Text from Text to Speech..."></ion-textarea>
-    <ion-button (click)="picoTest()">Pic Test</ion-button>
+    <ion-button (click)="initWakeWord()">Wake Word Init</ion-button>
+    <ion-button (click)="start()">Wake Word Start</ion-button>
     <ion-button (click)="pause()">Wake Word Pause</ion-button>
     <ion-button (click)="resume()">Wake Word Resume</ion-button>
-    <ion-button (click)="start()">Wake Word Start</ion-button>
-
+    <ion-button (click)="release()">Wake Word Release</ion-button>
+<!--
     <ul>
       <li *ngFor="let keywordLabel of detections">"{{ keywordLabel }}"</li>
     </ul>
     <h3>Inference:</h3>
-    <pre *ngIf="inference !== null">{{ inference | json }}</pre>
+    <pre *ngIf="inference !== null">{{ inference | json }}</pre> -->
 
     <!-- <app-speech-button
     [vertical]="'bottom'"
@@ -35,10 +31,10 @@
     <!-- <ion-button (click)="start()"></ion-button> -->
   </div>
 </ion-content>
-    <app-speech-button
+    <!-- <app-speech-button
     #speechButton
     [vertical]="'bottom'"
     [horizontal]="'center'"
     [slot]="'fixed'"
     (speechResultsEvent)="onSpeechResultsEvent($event)"
-  ></app-speech-button>
+  ></app-speech-button> -->
