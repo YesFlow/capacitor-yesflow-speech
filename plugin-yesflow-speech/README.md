@@ -25,6 +25,7 @@ npx cap sync
 * [`requestPermission()`](#requestpermission)
 * [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
+* [`addListener(...)`](#addlistener)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 
@@ -169,6 +170,22 @@ addListener(eventName: 'speechStateUpdate', listenerFunc: SpeechStateListener) =
 | ------------------ | --------------------------------------------------------- |
 | **`eventName`**    | <code>"speechStateUpdate"</code>                          |
 | **`listenerFunc`** | <code>(state: SpeechStateListenerEvent) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(...)
+
+```typescript
+addListener(eventName: 'micVisualizationUpdate', listenerFunc: MicStateListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                                   |
+| ------------------ | ------------------------------------------------------ |
+| **`eventName`**    | <code>"micVisualizationUpdate"</code>                  |
+| **`listenerFunc`** | <code>(event: MicStateListenerEvent) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 

@@ -1,133 +1,57 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { CapacitorYesflowSpeech } from '@capacitor-yesflow/speech';
-import { CapacitorYesflowWakeWord } from '@capacitor-yesflow/wakeword';
-import { WebVoiceProcessor } from '@picovoice/web-voice-processor';
-import { PicovoiceServiceArgs, RhinoInferenceFinalized } from "@picovoice/picovoice-web-angular/lib/picovoice_types"
-import { Subscription } from 'rxjs';
-import { CLOCK_EN_64 } from "../dist/rhn_contexts_base64";
-import { SpeechButtonComponent } from '../speech-components/speech-button/speech-button.component';
+import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, NgZone } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { SpeechButtonComponent } from './../speech-components/speech-button/speech-button.component';
+import { WakeWordService } from '../speech-components/providers/wake-word.service';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { CapacitorYesflowSpeech } from 'node_modules/@capacitor-yesflow/speech';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage  implements OnInit{
+export class HomePage implements OnInit {
+  isPageLoaded:any;
+  toggleWakeWord:any;
   data:any;
   isChunkLoaded: boolean = false
-  wakeWordStateSubscription: any;
+  shouldListenToWakeWord: boolean = false;
+  wakeWordStateSubscription: Subscription;
 
-  isError: boolean = false
-  error: Error | string | null = null
-  isListening: boolean | null = null
-  isTalking: boolean = false
-  errorMessage: string
-  detections: string[] = []
-  inference: RhinoInferenceFinalized | null = null
-  picovoiceServiceArgs: PicovoiceServiceArgs = {
-    rhinoContext: {
-      base64:
-        CLOCK_EN_64
-    },
-    porcupineKeyword: {
-      builtin: "Picovoice",
-    }
-  }
-  isLoaded: boolean = false
-  contextInfo: string | null
+  wakeWordState: any = "Unknown";
+  wakeWordDetectedSubscription: Subscription;
+  wakeWordDetected: any = "Test";
 
   @ViewChild('speechButton') public speechButton: SpeechButtonComponent;
 
-  constructor() {
-    this.runYesflowSpeechEcho();
-    this.runYesflowWakeWordEcho();
+  constructor(public ngZone: NgZone, public modalController: ModalController, public wakeWordService: WakeWordService, public changeDetector: ChangeDetectorRef) {
   }
 
   ngOnInit() {
-    this.loadWakeWord();
+    this.runYesflowSpeechEcho();
+    this.runYesflowWakeWordEcho();
+    this.loadPage();
   }
 
-  async loadWakeWord() {
-    // const picovoiceFactoryEn = (await import('@picovoice/picovoice-web-en-worker')).PicovoiceWorkerFactory
-    // this.isChunkLoaded = true
-    try {
-      await CapacitorYesflowWakeWord.initWakeWord()
-      console.info("CapacitorYesflowWakeWord is ready!")
-      this.isLoaded = true;
-      this.subscribeToWakeWordState();
-      // this.contextInfo = await CapacitorYesflowWakeWord.getContextInfo();
-      console.info("Picovoice contextInfo", this.contextInfo);
+  async loadPage() {
+    this.isPageLoaded = true;
+  }
+
+  onWakeWordStateEvent(event:any = null) {
+      console.log('onWakeWordStateEvent:', event);
+  }
+
+  onWakeWordEvent(event:any = null) {
+    if (this.shouldListenToWakeWord) {
+      console.log('HomePage: OnWakeWordEvent');
+      // this.speechButton.onRecordClick();
+      this.shouldListenToWakeWord = false;
     }
-    catch (error) {
-      console.error(error)
-      this.isError = true;
-      this.errorMessage = error.toString();
-    }
   }
-
-  subscribeToWakeWordState() {
-    console.log('Add WakeWordListeners');
-    CapacitorYesflowWakeWord.addListener('wakeWordStateUpdate', (event: any) => {
-      console.log('HandleWakeWordState', event);
-    });
-
-    CapacitorYesflowWakeWord.addListener('wakeWordInferenceDetected', (data: any) => {
-      console.log('wakeWordInferenceDetected', event);
-    });
-
-    CapacitorYesflowWakeWord.addListener('wakeWordDetected', (data: any) => {
-      console.log('wakeWordDetected', event);
-    });
-  }
-
-
-
-  public  async initWakeWord() {
-    await CapacitorYesflowWakeWord.initWakeWord(null, null);
-  }
-
-  public async start() {
-    await CapacitorYesflowWakeWord.start();
-  }
-
-  public  async pause() {
-    await CapacitorYesflowWakeWord.pause();
-  }
-
-  public async resume() {
-    await CapacitorYesflowWakeWord.resume();
-  }
-
-  public async release() {
-    await CapacitorYesflowWakeWord.release();
-  }
-
-
-
-  // async picoTest() {
-  //   let engines = []; // list of voice processing web workers (see below)
-  //   let handle = await WebVoiceProcessor.init({
-  //     engines: engines,
-  //     start: false
-  //   });
-  //   console.log('VoiceHandle: ', handle);
-  //   console.log('VoiceEngines: ', engines);
-  // }
-
-
-  // async startSpeech() {
-  //   const result = await CapacitorYesflowSpeech.;
-  //   console.log('HomePage: CapacitorYesflowSpeechPlugin: StartSpeech', result)
-  // }
-
-  // async stopSpeech() {
-  //   const result = await CapacitorYesflowSpeech.stop;
-  //   console.log('HomePage: CapacitorYesflowSpeechPlugin: StopSpeech', result)
-  // }
-
 
   onSpeechResultsEvent(data:any) {
-    console.log('SpeechResultsEvent',data);
+    console.log('HomePage: SpeechResultsEvent',data);
+    this.shouldListenToWakeWord = true;
     this.data = this.data || '';
     this.data += data?.result?.length > 0 ? data.result : '';
   }
@@ -138,7 +62,9 @@ export class HomePage  implements OnInit{
   }
 
   async runYesflowWakeWordEcho() {
-    const result = await CapacitorYesflowWakeWord.echo;
+    const result = await this.wakeWordService.runYesflowWakeWordEcho();
     console.log('HomePage: CapacitorYesflowWakeWordPlugin: Echo', result)
   }
 }
+
+

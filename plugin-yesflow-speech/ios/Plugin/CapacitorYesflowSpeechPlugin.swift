@@ -48,8 +48,8 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
     private var renderTs: Double = 0
     private var recordingTs: Double = 0
     private var silenceTs: Double = 0
-    private var recorderViewController: RecorderViewController?
-    private var audioView : AudioVisualizerView?
+//    private var recorderViewController: RecorderViewController?
+//    private var audioView : AudioVisualizerView?
     private let implementation = CapacitorYesflowSpeech()
 
     override public func load() {
@@ -63,8 +63,8 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
                 self?.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_UNKNOWN);
             }
         }
-        self.recorderViewController = RecorderViewController()
-        self.audioView = self.recorderViewController?.audioView
+//        self.recorderViewController = RecorderViewController()
+//        self.audioView = self.recorderViewController?.audioView
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -160,18 +160,18 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
 
             let status: SFSpeechRecognizerAuthorizationStatus = SFSpeechRecognizer.authorizationStatus()
             if status != SFSpeechRecognizerAuthorizationStatus.authorized {
-                call.reject(CapacitorYesflowSpeechPlugin.MESSAGE_MISSING_PERMISSION)
+                call.reject(CapacitorYesflowSpeechPlugin.MESSAGE_MISSING_PERMISSION, nil, nil)
                 return
             }
         
             guard let bridge = self.bridge else { return }
-            guard let recorderViewController = self.recorderViewController else { return }
-            guard let audioView = self.audioView else { return }
+//            guard let recorderViewController = self.recorderViewController else { return }
+//            guard let audioView = self.audioView else { return }
 
             AVAudioSession.sharedInstance().requestRecordPermission { (granted) in
                 if !granted {
                     self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_NOPERMISSIONS)
-                    call.reject(CapacitorYesflowSpeechPlugin.MESSAGE_ACCESS_DENIED_MICROPHONE)
+                    call.reject(CapacitorYesflowSpeechPlugin.MESSAGE_ACCESS_DENIED_MICROPHONE, nil, nil)
                     return
                 }
                 
@@ -185,7 +185,7 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
 
                 let audioSession: AVAudioSession = AVAudioSession.sharedInstance()
                 do {
-                    try audioSession.setCategory(AVAudioSession.Category.playAndRecord, options: AVAudioSession.CategoryOptions.defaultToSpeaker)
+                    try audioSession.setCategory(AVAudioSession.Category.playAndRecord, options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker])
                     try audioSession.setMode(AVAudioSession.Mode.default)
                     try audioSession.setActive(true, options: AVAudioSession.SetActiveOptions.notifyOthersOnDeactivation)
                     self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_READY)
@@ -240,7 +240,7 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
                         self.recognitionRequest = nil
                         self.recognitionTask = nil
                         self.handleNotifySpeechFinalResult()
-                        call.reject(error!.localizedDescription)
+                        call.reject(error?.localizedDescription ?? "error occured", nil, error)
                         self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_ERROR);
                     }
                 })
@@ -272,15 +272,22 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
                         DispatchQueue.main.async {
                             _ = (ts - self.recordingTs)
                             self.renderTs = ts
-                            let len = self.audioView!.waveforms.count
+//                            let len = self.audioView!.waveforms.count
+//                            for i in 0 ..< len {
+//                                let idx = ((frame.count - 1) * i) / len
+//                                let f: Float = sqrt(1.5 * abs(Float(frame[idx])) / Float(Int16.max))
+//                                self.audioView!.waveforms[i] = min(49, Int(f * 50))
+//                            }
+//                            audioView.active = true
+//                            self.audioView!.active = !silent
+//                            audioView.setNeedsDisplay()
+                            
+                            let len = 100
                             for i in 0 ..< len {
                                 let idx = ((frame.count - 1) * i) / len
                                 let f: Float = sqrt(1.5 * abs(Float(frame[idx])) / Float(Int16.max))
-                                self.audioView!.waveforms[i] = min(49, Int(f * 50))
+                                self.handleMicVisualizationUpdate(waveId: i, waveResult: min(49, Int(f * 50)))
                             }
-                            audioView.active = true
-//                            self.audioView!.active = !silent
-                            audioView.setNeedsDisplay()
                         }
                     }
        
@@ -291,9 +298,9 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
                     self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_STARTING)
                     try self.audioEngine?.start()
                     self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_STARTED);
-                    DispatchQueue.main.async {
-                        bridge.viewController?.present(recorderViewController, animated: true, completion: nil)
-                    }
+//                    DispatchQueue.main.async {
+//                        bridge.viewController?.present(recorderViewController, animated: true, completion: nil)
+//                    }
                     call.resolve()
                 } catch {
                     // Try it one More Time After 2 Seconds
@@ -482,6 +489,16 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
         ] as [String : Any];
         self.lastResult = result;
         self.notifyListeners("speechResults", data: result, retainUntilConsumed: true)
+    }
+    
+    @objc func handleMicVisualizationUpdate(waveId: Int, waveResult: Int) {
+        // Helper Methods for Sending Results
+        print ("CapacitorYesflowSpeechPlugin: handleMicVisualizationUpdate")
+        let result = [
+            "waveId": waveId,
+            "waveResult": waveResult
+        ] as [String : Any];
+        self.notifyListeners("micVisualizationUpdate", data: result, retainUntilConsumed: false)
     }
     
     @objc func handleNotifySpeechFinalResult() {

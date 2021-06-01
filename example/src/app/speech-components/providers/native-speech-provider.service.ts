@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
-import { SpeechState, CapacitorYesflowSpeech} from 'node_modules/@capacitor-yesflow/speech';
+import { SpeechState, CapacitorYesflowSpeech, MicStateListenerEvent} from 'node_modules/@capacitor-yesflow/speech';
 
 import { BehaviorSubject, of } from 'rxjs';
 
@@ -19,6 +19,7 @@ export class NativeSpeechProviderService {
   speechResults:any = null;
   speechResults$: BehaviorSubject<string> = new BehaviorSubject(this.speechResults);
 
+  micResults$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   constructor(public ngZone: NgZone, public platform: Platform) {
      this.init();
@@ -69,13 +70,9 @@ export class NativeSpeechProviderService {
       this.handleSpeechStateUpdate(data);
     });
 
-    // window.addEventListener('speechResults', (data) => {
-    //   this.handleSpeechResults(data);
-    // });
-
-    // window.addEventListener('speechStateUpdate', (data: any) => {
-    //   this.handleSpeechStateUpdate(data);
-    // });
+    CapacitorYesflowSpeech.addListener('micVisualizationUpdate', (data: any) => {
+      this.handleMicVisualizationUpdate(data);
+    });
   }
 
   updateShouldListen(listen: boolean) {
@@ -108,9 +105,20 @@ export class NativeSpeechProviderService {
   }
 
   handleSpeechStateUpdate(data:any) {
-    console.log('SpeechState', data);
     this.ngZone.run(()=>{
+        console.log('SpeechState', data);
         this.updateSpeechState(data?.state);
+    })
+  }
+
+  handleMicVisualizationUpdate(data:MicStateListenerEvent) {
+    this.ngZone.run(()=>{
+      // console.log('VisualizationUpdate', data);
+      const waveResult = {
+        waveId: data?.waveId || 0,
+        waveResult: data?.waveResult || 0
+      }
+      this.micResults$.next(waveResult);
     })
   }
 

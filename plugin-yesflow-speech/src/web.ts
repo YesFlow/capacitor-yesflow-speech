@@ -9,6 +9,7 @@ import type {
 } from './definitions';
 import { YesflowSpeechUIUtils } from './util';
 
+
 export class CapacitorYesflowSpeechWeb
   extends WebPlugin
   implements CapacitorYesflowSpeechPlugin {

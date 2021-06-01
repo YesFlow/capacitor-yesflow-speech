@@ -2,6 +2,7 @@ import type { PluginListenerHandle } from "@capacitor/core";
 
 export type SpeechResultListener = (event: SpeechResultListenerEvent) => void;
 export type SpeechStateListener = (state: SpeechStateListenerEvent) => void;
+export type MicStateListener = (event: MicStateListenerEvent) => void;
 export interface IWindow extends Window {
   webkitSpeechRecognition: any;
   webkitAudioContext: any;
@@ -44,6 +45,11 @@ export interface SpeechStateListenerEvent {
   state: string;
 }
 
+export interface MicStateListenerEvent {
+  waveId?: number,
+  waveResult?: number
+}
+
 export enum SpeechState {
   STATE_UNKNOWN = "Unknown",
   STATE_STARTING = "Starting",
@@ -78,7 +84,12 @@ export interface CapacitorYesflowSpeechPlugin {
     eventName: 'speechStateUpdate',
     listenerFunc: SpeechStateListener,
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  addListener(
+    eventName: 'micVisualizationUpdate',
+    listenerFunc: MicStateListener,
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
 
+  
   removeAllListeners(): Promise<void>;
 }
 

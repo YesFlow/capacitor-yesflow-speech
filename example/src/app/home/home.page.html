@@ -1,40 +1,37 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title class="ion-text-center">
       Speech Test
     </ion-title>
   </ion-toolbar>
 </ion-header>
-
-<ion-content [fullscreen]="true">
-  <div id="container">
-    <strong>Ready to Speak?</strong>
-    <ion-textarea [value]="data" rows="20" cols="20" placeholder="Text from Text to Speech..."></ion-textarea>
-    <ion-button (click)="initWakeWord()">Wake Word Init</ion-button>
-    <ion-button (click)="start()">Wake Word Start</ion-button>
-    <ion-button (click)="pause()">Wake Word Pause</ion-button>
-    <ion-button (click)="resume()">Wake Word Resume</ion-button>
-    <ion-button (click)="release()">Wake Word Release</ion-button>
-<!--
-    <ul>
-      <li *ngFor="let keywordLabel of detections">"{{ keywordLabel }}"</li>
-    </ul>
-    <h3>Inference:</h3>
-    <pre *ngIf="inference !== null">{{ inference | json }}</pre> -->
-
-    <!-- <app-speech-button
-    [vertical]="'bottom'"
-    [horizontal]="'center'"
-    [slot]="'fixed'"
-    (speechResultsEvent)="onSpeechResultsEvent($event)"
-  ></app-speech-button> -->
-    <!-- <ion-button (click)="start()"></ion-button> -->
+<ion-content fullscreen="true">
+  <!-- <a href="/visualizertest">Visualizer Test</a> -->
+  <div *ngIf="isPageLoaded; else loading">
+      <app-wake-word-listener
+      [showDebug]="true"
+      [showWakeWordToggle]="true"
+      [startWakeWord]="true"
+      [shouldListenToWakeWord]="true"
+      (wakeWordDetectedEvent)="onWakeWordEvent($event)"
+      (wakeWordStateUpdateEvent)="onWakeWordStateEvent($event)"
+      ></app-wake-word-listener>
+      <p> <strong>Ready to Speak?</strong></p>
+      <ion-textarea [value]="data" rows="5" cols="15" placeholder="Text from Text to Speech..."></ion-textarea>
   </div>
+  <ng-template #loading>
+      <ion-skeleton-text></ion-skeleton-text>
+  </ng-template>
 </ion-content>
-    <!-- <app-speech-button
-    #speechButton
-    [vertical]="'bottom'"
-    [horizontal]="'center'"
-    [slot]="'fixed'"
-    (speechResultsEvent)="onSpeechResultsEvent($event)"
-  ></app-speech-button> -->
+<ion-footer>
+  <app-speech-button
+  #speechButton
+  [vertical]="'bottom'"
+  [horizontal]="'center'"
+  [slot]="'fixed'"
+  (speechResultsEvent)="onSpeechResultsEvent($event)"
+  ></app-speech-button>
+</ion-footer>
+
+
+<ng-template></ng-template>

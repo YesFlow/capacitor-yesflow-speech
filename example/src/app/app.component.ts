@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { CapacitorYesflowSpeech } from '@capacitor-yesflow/speech';
-import { CapacitorYesflowWakeWord } from '@capacitor-yesflow/wakeword';
+import { CapacitorYesflowSpeech } from 'node_modules/@capacitor-yesflow/speech';
+import { CapacitorYesflowWakeWord } from 'node_modules/@capacitor-yesflow/wakeword';
 
 @Component({
   selector: 'app-root',

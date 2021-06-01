@@ -11,6 +11,14 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'wakeword',
+    loadChildren: () => import('./wake-word-test/wake-word-test.module').then( m => m.WakeWordTestPageModule)
+  },
+  {
+    path: 'visualizertest',
+    loadChildren: () => import('./visualizer-test/visualizer-test.module').then( m => m.VisualizerTestPageModule)
+  }
 ];
 
 @NgModule({

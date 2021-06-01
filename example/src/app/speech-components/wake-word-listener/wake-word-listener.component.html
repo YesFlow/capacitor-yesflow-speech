@@ -1,0 +1,33 @@
+
+<ion-list *ngIf="componentLoaded && showWakeWordToggle">
+  <ion-item>
+    <ion-label>Wake Word On</ion-label>
+    <ion-toggle [(ngModel)]="wakeWordEnabled" (ionChange)="onWakeWordToggleChange()"></ion-toggle>
+  </ion-item>
+
+</ion-list>
+
+
+<ion-list *ngIf="componentLoaded && showDebug">
+  <ion-item>
+    <ion-label>Wake Word Enabled:</ion-label>
+    <p>{{wakeWordEnabled}}</p>
+  </ion-item>
+  <ion-item>
+    <ion-label>Wake Word State:</ion-label>
+    <p>{{wakeWordState}}</p>
+  </ion-item>
+  <ion-item>
+    <ion-label>Wake Word Detected:</ion-label>
+    <p>{{wakeWordDetected}}</p>
+  </ion-item>
+</ion-list>
+
+<!-- <span class="d-inline-block">
+  <button disabled=""
+    type="button"
+    class="mic btn btn-outline-primary btn-sm"
+    style="pointer-events: none;">
+  <img alt="Microphone Icon" src="/assets/microphone_pv_blue.svg" class="hero-microphone-icon"></button>
+</span> -->
+

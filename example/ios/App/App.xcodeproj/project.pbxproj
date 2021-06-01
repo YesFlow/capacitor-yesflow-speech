@@ -16,6 +16,10 @@
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
 		E3085515266124C3000921C1 /* CustomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3085514266124C3000921C1 /* CustomViewController.swift */; };
+		E335C3C82666A7BF00F03F9A /* hey_yesflow_keyword_ios.ppn in Resources */ = {isa = PBXBuildFile; fileRef = E335C3C72666A7BF00F03F9A /* hey_yesflow_keyword_ios.ppn */; };
+		E336A8E02664152B00F02D3E /* porcupine_params.pv in Resources */ = {isa = PBXBuildFile; fileRef = E336A8DF2664152B00F02D3E /* porcupine_params.pv */; };
+		E336A8E22664153600F02D3E /* intent.rhn in Resources */ = {isa = PBXBuildFile; fileRef = E336A8E12664153600F02D3E /* intent.rhn */; };
+		E39E48BA2663E7BA00439225 /* rhino_params.pv in Resources */ = {isa = PBXBuildFile; fileRef = E39E48B82663E7BA00439225 /* rhino_params.pv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +35,10 @@
 		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
 		E3085514266124C3000921C1 /* CustomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomViewController.swift; sourceTree = "<group>"; };
+		E335C3C72666A7BF00F03F9A /* hey_yesflow_keyword_ios.ppn */ = {isa = PBXFileReference; lastKnownFileType = file; name = hey_yesflow_keyword_ios.ppn; path = App/public/assets/wakeword/hey_yesflow_keyword_ios.ppn; sourceTree = "<group>"; };
+		E336A8DF2664152B00F02D3E /* porcupine_params.pv */ = {isa = PBXFileReference; lastKnownFileType = file; name = porcupine_params.pv; path = App/public/assets/wakeword/porcupine_params.pv; sourceTree = "<group>"; };
+		E336A8E12664153600F02D3E /* intent.rhn */ = {isa = PBXFileReference; lastKnownFileType = file; name = intent.rhn; path = App/public/assets/wakeword/intent.rhn; sourceTree = "<group>"; };
+		E39E48B82663E7BA00439225 /* rhino_params.pv */ = {isa = PBXFileReference; lastKnownFileType = file; name = rhino_params.pv; path = App/public/assets/wakeword/rhino_params.pv; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -57,6 +65,10 @@
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
+				E335C3C72666A7BF00F03F9A /* hey_yesflow_keyword_ios.ppn */,
+				E336A8E12664153600F02D3E /* intent.rhn */,
+				E336A8DF2664152B00F02D3E /* porcupine_params.pv */,
+				E39E48B82663E7BA00439225 /* rhino_params.pv */,
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
 				7F8756D8B27F46E3366F6CEA /* Pods */,
@@ -158,6 +170,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E335C3C82666A7BF00F03F9A /* hey_yesflow_keyword_ios.ppn in Resources */,
+				E336A8E22664153600F02D3E /* intent.rhn in Resources */,
+				E336A8E02664152B00F02D3E /* porcupine_params.pv in Resources */,
+				E39E48BA2663E7BA00439225 /* rhino_params.pv in Resources */,
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
 				50B271D11FEDC1A000F3C39B /* public in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,

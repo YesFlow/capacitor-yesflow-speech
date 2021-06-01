@@ -39,11 +39,7 @@
       </ion-item>
     </ion-list>
   </ng-container>
-  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button>
-      <ion-icon [name]="showStartRecordingButton ? 'mic' : 'stop-circle'" (click)="toggleRecording()"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+
 </ion-content>
 <ion-footer class="ion-padding">
   <ion-toolbar>
@@ -61,4 +57,9 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>
+<ion-fab vertical="bottom" horizontal="center" slot="fixed">
+  <ion-fab-button>
+    <ion-icon [name]="showStartRecordingButton ? 'mic' : 'stop-circle'" (click)="toggleRecording()"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
 
