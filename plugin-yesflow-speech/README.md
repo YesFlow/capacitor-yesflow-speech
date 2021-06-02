@@ -206,13 +206,14 @@ removeAllListeners() => Promise<void>
 
 #### UtteranceOptions
 
-| Prop                 | Type                 |
-| -------------------- | -------------------- |
-| **`language`**       | <code>string</code>  |
-| **`maxResults`**     | <code>number</code>  |
-| **`prompt`**         | <code>string</code>  |
-| **`popup`**          | <code>boolean</code> |
-| **`partialResults`** | <code>boolean</code> |
+| Prop                           | Type                 |
+| ------------------------------ | -------------------- |
+| **`language`**                 | <code>string</code>  |
+| **`maxResults`**               | <code>number</code>  |
+| **`prompt`**                   | <code>string</code>  |
+| **`popup`**                    | <code>boolean</code> |
+| **`partialResults`**           | <code>boolean</code> |
+| **`sendVisualizationUpdates`** | <code>boolean</code> |
 
 
 #### PluginListenerHandle
