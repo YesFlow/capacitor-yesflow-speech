@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CapacitorYesflowSpeech } from 'node_modules/@capacitor-yesflow/speech';
 import { CapacitorYesflowWakeWord } from 'node_modules/@capacitor-yesflow/wakeword';
 
+import '../assets/js/p5/p5.min.js';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',

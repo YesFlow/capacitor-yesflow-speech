@@ -1,0 +1,13 @@
+<button id="btn">
+  Start
+</button>
+<div id="wrapper"></div>
+<br />
+<canvas id="canvas" style="background:black;width:512px;height:255px;"></canvas>
+
+<div *ngIf="!browserSupported" class="error">
+ Browser not Supported
+</div>
+<div *ngIf="browserSupported && !micAllowed" class="error">
+ No Access to the Microphone
+</div>

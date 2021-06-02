@@ -41,7 +41,8 @@ export class NativeSpeechProviderService {
       maxResults: 5,
       prompt: '',
       popup: false,
-      partialResults: true
+      partialResults: true,
+      sendVisualizationUpdates: true
     };
     return options;
   }
@@ -113,7 +114,6 @@ export class NativeSpeechProviderService {
 
   handleMicVisualizationUpdate(data:MicStateListenerEvent) {
     this.ngZone.run(()=>{
-      // console.log('VisualizationUpdate', data);
       const waveResult = {
         waveId: data?.waveId || 0,
         waveResult: data?.waveResult || 0

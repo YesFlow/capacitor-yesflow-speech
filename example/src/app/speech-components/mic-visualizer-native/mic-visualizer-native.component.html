@@ -1,0 +1,44 @@
+<!-- <div *ngIf="browserSupported && micAllowed" class="carousel">
+  <app-graph #miniLed [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
+      [ngClass]="{'selected': graphType===ledGraphType}" [graphType]="ledGraphType" (click)="select(ledGraphType)">
+  </app-graph>
+  <app-graph #miniBubble [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
+      [ngClass]="{'selected': graphType==bubbleGraphType}" [graphType]="bubbleGraphType"
+      (click)="select(bubbleGraphType)">
+  </app-graph>
+  <app-graph #miniPie [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
+      [ngClass]="{'selected': graphType===pieGraphType}" [graphType]="pieGraphType" (click)="select(pieGraphType)">
+  </app-graph>
+  <app-graph #miniSpiro [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
+      [ngClass]="{'selected': graphType===spiroGraphType}" [graphType]="spiroGraphType"
+      (click)="select(spiroGraphType)">
+  </app-graph>
+  <app-graph #miniWave [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
+      [ngClass]="{'selected': graphType===waveGraphType}" [graphType]="waveGraphType" (click)="select(waveGraphType)">
+  </app-graph>
+</div> -->
+
+<!-- <div *ngIf="browserSupported && micAllowed" class="carousel">
+  <app-graph #miniLed [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
+  [ngClass]="{'selected': graphType===ledGraphType}" [graphType]="ledGraphType" (click)="select(ledGraphType)">
+</app-graph>
+</div> -->
+
+<div *ngIf="browserSupported && micAllowed" class="container">
+    <app-graph #graph
+        [transitionTime]="transitionTime"
+        [frequencyBinCount]="bufferLength"
+        [maxStdAmplitude]="255" [graphType]="graphType">
+    </app-graph>
+
+  <!-- <div id="hint" *ngIf="silent">
+      Listening ...
+  </div> -->
+</div>
+
+<div *ngIf="!browserSupported" class="error">
+ Browser not Supported
+</div>
+<div *ngIf="browserSupported && !micAllowed" class="error">
+ No Access to the Microphone
+</div>

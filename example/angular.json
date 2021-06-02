@@ -32,7 +32,11 @@
               }
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
-            "scripts": [],
+            "scripts": [
+              { "input": "src/assets/js/p5/p5.min.js","inject": true,"bundleName": "p5"},
+              { "input": "src/assets/js/p5/addons/p5.sound.min.js","inject": true,"bundleName": "p5.sound"},
+              { "input": "src/assets/js/p5/addons/p5.speech.js","inject": true,"bundleName": "p5.speech"}
+            ],
             "allowedCommonJsDependencies": [
               "lodash",
               "uuid"

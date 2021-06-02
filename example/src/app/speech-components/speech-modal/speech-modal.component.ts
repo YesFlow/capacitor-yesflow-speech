@@ -17,7 +17,7 @@ import {v4} from 'uuid';
 export class SpeechModalComponent implements OnInit, OnDestroy {
   @Input('speechSessionId') speechSessionId:any = '';
   showStartRecordingButton: any;
-  showVisualizer: any;
+  showVisualizer: any = true;
   showTimer:any;
   currentState: SpeechState = SpeechState.STATE_UNKNOWN;
   hideLoader: any;

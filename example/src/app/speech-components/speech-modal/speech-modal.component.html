@@ -39,27 +39,30 @@
       </ion-item>
     </ion-list>
   </ng-container>
+  <!-- <app-mic-vol-meter *ngIf="showVisualizer"></app-mic-vol-meter> -->
+  <!-- <app-mic-visualizer-p5 *ngIf="showVisualizer"></app-mic-visualizer-p5> -->
 
 </ion-content>
+
 <ion-footer class="ion-padding">
   <ion-toolbar>
-    <app-mic-visualizer *ngIf="showVisualizer"></app-mic-visualizer>
+
+    <!-- <app-mic-visualizer-p5 *ngIf="showVisualizer"></app-mic-visualizer-p5> -->
+    <!-- <app-mic-visualizer-test *ngIf="showVisualizer"></app-mic-visualizer-test> -->
+    <!-- <app-mic-visualizer *ngIf="showVisualizer"></app-mic-visualizer> -->
+    <!-- <app-mic-visualizer-native *ngIf="showVisualizer"></app-mic-visualizer-native> -->
   </ion-toolbar>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="undoLast()" [disabled]=""><ion-icon name="arrow-undo"></ion-icon>Undo</ion-button>
       <ion-button (click)="addCurrentText()" [disabled]=""><ion-icon name="swap-vertical-outline"></ion-icon>Add</ion-button>
-    </ion-buttons>
-
-    <ion-buttons slot="end">
+      <ion-fab-button>
+        <ion-icon [name]="showStartRecordingButton ? 'mic' : 'stop-circle'" (click)="toggleRecording()"></ion-icon>
+      </ion-fab-button>
       <ion-button (click)="cancel()" [disabled]=""><ion-icon name="trash-bin-outline"></ion-icon>Cancel</ion-button>
       <ion-button (click)="sendResults()" [disabled]=""><ion-icon name="send"></ion-icon>Send</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>
-<ion-fab vertical="bottom" horizontal="center" slot="fixed">
-  <ion-fab-button>
-    <ion-icon [name]="showStartRecordingButton ? 'mic' : 'stop-circle'" (click)="toggleRecording()"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
+
 

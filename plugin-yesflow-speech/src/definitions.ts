@@ -8,13 +8,13 @@ export interface IWindow extends Window {
   webkitAudioContext: any;
 }
 
-
 export interface UtteranceOptions {
   language?: string;
   maxResults?: number;
   prompt?: string;
   popup?: boolean;
   partialResults?: boolean;
+  sendVisualizationUpdates?: boolean;
 }
 
 export interface SpeechResultListenerEvent {
@@ -46,8 +46,8 @@ export interface SpeechStateListenerEvent {
 }
 
 export interface MicStateListenerEvent {
-  waveId?: number,
-  waveResult?: number
+  waveId?: number;
+  waveResult?: number[];
 }
 
 export enum SpeechState {

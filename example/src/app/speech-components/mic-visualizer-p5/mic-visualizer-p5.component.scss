@@ -1,0 +1,27 @@
+:host {
+  max-height: 100px;
+}
+.mic-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  > div {
+    display: inline-block;
+    width: 3px;
+    height: 100px;
+    margin: 0 7px;
+    background: currentColor;
+    transform: scaleY( .5 );
+    opacity: .25;
+  }
+
+  &.error {
+    color: #f7451d;
+    min-width: 20em;
+    max-width: 30em;
+    margin: 0 auto;
+    white-space: pre-line;
+  }
+}

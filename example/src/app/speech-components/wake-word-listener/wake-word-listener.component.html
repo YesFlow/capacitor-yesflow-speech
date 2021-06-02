@@ -4,9 +4,7 @@
     <ion-label>Wake Word On</ion-label>
     <ion-toggle [(ngModel)]="wakeWordEnabled" (ionChange)="onWakeWordToggleChange()"></ion-toggle>
   </ion-item>
-
 </ion-list>
-
 
 <ion-list *ngIf="componentLoaded && showDebug">
   <ion-item>

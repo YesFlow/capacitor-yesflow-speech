@@ -1,0 +1,8 @@
+<div #micContainer id="mic-visualizer" class="mic-container">
+</div>
+
+<canvas #vizCanvas style="background:black;width:512px;height:255px;">
+</canvas>
+<div *ngIf="!this.micAllowed">
+   Mic Not Allowed
+</div>

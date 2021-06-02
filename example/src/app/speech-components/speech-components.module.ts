@@ -10,6 +10,10 @@ import { GraphComponent } from './graph/graph.component';
 import { MicVisualizerComponent } from './mic-visualizer/mic-visualizer.component';
 import { WakeWordListenerComponent } from './wake-word-listener/wake-word-listener.component';
 import { MicIconComponent } from './mic-icon/mic-icon.component';
+import { MicVisualizerNativeComponent } from './mic-visualizer-native/mic-visualizer-native.component';
+import { MicVisualizerP5Component } from './mic-visualizer-p5/mic-visualizer-p5.component';
+import { MicVisualizerTestComponent } from './mic-visualizer-test/mic-visualizer-test.component';
+import { MicVolMeterComponent } from './mic-vol-meter/mic-vol-meter.component';
 
 @NgModule({
   imports: [
@@ -17,8 +21,8 @@ import { MicIconComponent } from './mic-icon/mic-icon.component';
     FormsModule,
     IonicModule,
   ],
-  declarations: [ WakeWordListenerComponent, SpeechModalComponent, SpeechTimerComponent, SpeechButtonComponent, GraphComponent, MicVisualizerComponent, MicIconComponent],
-  exports: [WakeWordListenerComponent, SpeechModalComponent, SpeechTimerComponent, SpeechButtonComponent, GraphComponent, MicVisualizerComponent, MicIconComponent],
+  declarations: [ WakeWordListenerComponent, SpeechModalComponent, SpeechTimerComponent, SpeechButtonComponent, GraphComponent, MicVisualizerComponent, MicVisualizerNativeComponent, MicVisualizerP5Component, MicIconComponent, MicVisualizerTestComponent, MicVolMeterComponent],
+  exports: [WakeWordListenerComponent, SpeechModalComponent, SpeechTimerComponent, SpeechButtonComponent, GraphComponent, MicVisualizerComponent, MicVisualizerNativeComponent,MicVisualizerP5Component,MicIconComponent, MicVisualizerTestComponent, MicVolMeterComponent],
   providers: [NativeSpeechProviderService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

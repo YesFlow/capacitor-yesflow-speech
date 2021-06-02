@@ -18,6 +18,7 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
     static let DEFAULT_LANGUAGE = "en-US"
     static let DEFAULT_MATCHES = 5
     static let DEFAULT_PARTIAL_RESULTS = true
+    static let DEFAULT_SEND_VISUALIZATION_UPDATES = false
     static let MESSAGE_MISSING_PERMISSION = "Missing permission"
     static let MESSAGE_ACCESS_DENIED = "User denied access to speech recognition"
     static let MESSAGE_RESTRICTED = "Speech recognition restricted on this device"
@@ -48,6 +49,9 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
     private var renderTs: Double = 0
     private var recordingTs: Double = 0
     private var silenceTs: Double = 0
+    private var sendVisualizationUpdates: Bool = false;
+    private var pauseVisualizationUpdates: Bool = false;
+    private var frameSendCount: Int = 0;
 //    private var recorderViewController: RecorderViewController?
 //    private var audioView : AudioVisualizerView?
     private let implementation = CapacitorYesflowSpeech()
@@ -141,6 +145,7 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
             self.stopListening()
         }
         call.resolve()
+        self.pauseVisualizationUpdates = true
         self.start(call)
     }
 
@@ -149,8 +154,8 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
         let language: String = call.getString("language") ?? "en-US"
         let maxResults : Int = call.getInt("maxResults") ?? CapacitorYesflowSpeechPlugin.DEFAULT_MATCHES
         let partialResults : Bool = call.getBool("partialResults") ?? CapacitorYesflowSpeechPlugin.DEFAULT_PARTIAL_RESULTS
-
-
+        self.sendVisualizationUpdates = call.getBool("sendVisualizationUpdates") ?? CapacitorYesflowSpeechPlugin.DEFAULT_SEND_VISUALIZATION_UPDATES
+        
             if (self.audioEngine != nil) {
                 self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_RESTARTING)
                 self.stopListening()
@@ -188,9 +193,11 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
                     try audioSession.setCategory(AVAudioSession.Category.playAndRecord, options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker])
                     try audioSession.setMode(AVAudioSession.Mode.default)
                     try audioSession.setActive(true, options: AVAudioSession.SetActiveOptions.notifyOthersOnDeactivation)
+                    self.pauseVisualizationUpdates = false
                     self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_READY)
                 } catch {
                     self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_ERROR)
+                    self.pauseVisualizationUpdates = true
                 }
 
                 self.recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
@@ -244,53 +251,12 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
                         self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_ERROR);
                     }
                 })
-
          
-                
                 inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
                     self.recognitionRequest?.append(buffer)
-                    
-                    let level: Float = -50
-                    let length: UInt32 = 1024
-                    buffer.frameLength = length
-                    let channels = UnsafeBufferPointer(start: buffer.floatChannelData, count: Int(buffer.format.channelCount))
-                    var value: Float = 0
-                    vDSP_meamgv(channels[0], 1, &value, vDSP_Length(length))
-                    var average: Float = ((value == 0) ? -100 : 20.0 * log10f(value))
-                    if average > 0 {
-                        average = 0
-                    } else if average < -100 {
-                        average = -100
+                    if (self.sendVisualizationUpdates && !self.pauseVisualizationUpdates) {
+                        self.handleSpeechVisualUpdates(buffer: buffer)
                     }
-                    let silent = average < level
-                    let ts = NSDate().timeIntervalSince1970
-                    if ts - self.renderTs > 0.1 {
-                        let floats = UnsafeBufferPointer(start: channels[0], count: Int(buffer.frameLength))
-                        let frame = floats.map({ (f) -> Int in
-                            return Int(f * Float(Int16.max))
-                        })
-                        DispatchQueue.main.async {
-                            _ = (ts - self.recordingTs)
-                            self.renderTs = ts
-//                            let len = self.audioView!.waveforms.count
-//                            for i in 0 ..< len {
-//                                let idx = ((frame.count - 1) * i) / len
-//                                let f: Float = sqrt(1.5 * abs(Float(frame[idx])) / Float(Int16.max))
-//                                self.audioView!.waveforms[i] = min(49, Int(f * 50))
-//                            }
-//                            audioView.active = true
-//                            self.audioView!.active = !silent
-//                            audioView.setNeedsDisplay()
-                            
-                            let len = 100
-                            for i in 0 ..< len {
-                                let idx = ((frame.count - 1) * i) / len
-                                let f: Float = sqrt(1.5 * abs(Float(frame[idx])) / Float(Int16.max))
-                                self.handleMicVisualizationUpdate(waveId: i, waveResult: min(49, Int(f * 50)))
-                            }
-                        }
-                    }
-       
                 }
 
                 self.audioEngine?.prepare()
@@ -325,6 +291,7 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
         self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_STOPPING)
         self.stopListening()
         self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_STOPPED)
+        self.pauseVisualizationUpdates = true
         call.resolve()
     }
     
@@ -464,6 +431,7 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
 
     
     @objc private func stopListening() {
+        print ("CapacitorYesflowSpeechPlugin: stopListening")
         guard isListening else {return}
         DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async {
             if self.audioEngine!.isRunning {
@@ -474,6 +442,35 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
                 self.recognitionRequest = nil
                 self.recognitionTask = nil
                 self.isListening = false
+                self.pauseVisualizationUpdates = true
+            }
+        }
+    }
+    
+    func handleSpeechVisualUpdates(buffer: AVAudioPCMBuffer) {
+        let level: Float = -50
+        let length: UInt32 = 1024
+        buffer.frameLength = length
+        let channels = UnsafeBufferPointer(start: buffer.floatChannelData, count: Int(buffer.format.channelCount))
+        var value: Float = 0
+        vDSP_meamgv(channels[0], 1, &value, vDSP_Length(length))
+        var average: Float = ((value == 0) ? -100 : 20.0 * log10f(value))
+        if average > 0 {
+            average = 0
+        } else if average < -100 {
+            average = -100
+        }
+        let ts = NSDate().timeIntervalSince1970
+        if ts - self.renderTs > 0.1 {
+            let floats = UnsafeBufferPointer(start: channels[0], count: Int(buffer.frameLength))
+            let frame = floats.map({ (f) -> Int in
+                return Int(f * Float(Int16.max))
+            })
+            if (self.sendVisualizationUpdates && !self.pauseVisualizationUpdates) {
+                DispatchQueue.main.async {
+                    self.handleMicVisualizationUpdate(waveId: self.frameSendCount, waveResult:frame )
+                    self.frameSendCount = self.frameSendCount + 1
+                }
             }
         }
     }
@@ -491,9 +488,9 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
         self.notifyListeners("speechResults", data: result, retainUntilConsumed: true)
     }
     
-    @objc func handleMicVisualizationUpdate(waveId: Int, waveResult: Int) {
+    @objc func handleMicVisualizationUpdate(waveId: Int, waveResult: Array<Int>) {
         // Helper Methods for Sending Results
-        print ("CapacitorYesflowSpeechPlugin: handleMicVisualizationUpdate")
+//        print ("CapacitorYesflowSpeechPlugin: handleMicVisualizationUpdate")
         let result = [
             "waveId": waveId,
             "waveResult": waveResult

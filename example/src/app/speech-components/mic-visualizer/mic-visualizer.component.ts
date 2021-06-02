@@ -140,11 +140,14 @@ export class MicVisualizerComponent implements OnInit, OnDestroy {
 
   logDataCount = 0;;
   processInput = (event) => {
+    // console.log('AnalyzerFrequenceBinCount', this.analyzer.frequencyBinCount);
     const dataArray = new Uint8Array(this.analyzer.frequencyBinCount);
     const waveArray = new Uint8Array(this.analyzer.frequencyBinCount);
     this.analyzer.fftSize = this.fftSize;
     this.analyzer.getByteFrequencyData(dataArray);
-    this.analyzer.getByteTimeDomainData(waveArray);
+    console.log('getByteFrequencyData', dataArray);
+    // this.analyzer.getByteTimeDomainData(waveArray);
+    // console.log('AnalyzerDataArray', waveArray);
 
     const mean = Math.floor(d3.mean(dataArray));
     if (mean === 0) {

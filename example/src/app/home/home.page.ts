@@ -15,7 +15,7 @@ export class HomePage implements OnInit {
   toggleWakeWord:any;
   data:any;
   isChunkLoaded: boolean = false
-  shouldListenToWakeWord: boolean = false;
+  shouldListenToWakeWord: boolean = true;
   wakeWordStateSubscription: Subscription;
 
   wakeWordState: any = "Unknown";
@@ -42,9 +42,10 @@ export class HomePage implements OnInit {
   }
 
   onWakeWordEvent(event:any = null) {
+    console.log('HomePage: OnWakeWordEvent', event);
     if (this.shouldListenToWakeWord) {
-      console.log('HomePage: OnWakeWordEvent');
-      // this.speechButton.onRecordClick();
+      console.log('HomePage: OnWakeWordEvent ShouldListen');
+      this.speechButton.onRecordClick();
       this.shouldListenToWakeWord = false;
     }
   }
