@@ -8,6 +8,7 @@ enum RecorderState {
     case denied
 }
 
+@available(iOS 13.0, *)
 protocol RecorderViewControllerDelegate: class {
     func didStartRecording()
     func didFinishRecording()
@@ -15,6 +16,7 @@ protocol RecorderViewControllerDelegate: class {
 
 let keyID = "key"
 
+@available(iOS 13.0, *)
 class RecorderViewController: UIViewController {
 
     //MARK:- Properties

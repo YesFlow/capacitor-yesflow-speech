@@ -85,12 +85,14 @@ getLastResult() => Promise<{ result: any; }>
 ### start(...)
 
 ```typescript
-start(options?: UtteranceOptions | undefined) => Promise<void>
+start(options?: UtteranceOptions | undefined) => Promise<any>
 ```
 
 | Param         | Type                                                          |
 | ------------- | ------------------------------------------------------------- |
 | **`options`** | <code><a href="#utteranceoptions">UtteranceOptions</a></code> |
+
+**Returns:** <code>Promise&lt;any&gt;</code>
 
 --------------------
 

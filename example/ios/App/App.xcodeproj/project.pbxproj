@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,9 +16,9 @@
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
 		E3085515266124C3000921C1 /* CustomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3085514266124C3000921C1 /* CustomViewController.swift */; };
-		E335C3C82666A7BF00F03F9A /* hey_yesflow_keyword_ios.ppn in Resources */ = {isa = PBXBuildFile; fileRef = E335C3C72666A7BF00F03F9A /* hey_yesflow_keyword_ios.ppn */; };
 		E336A8E02664152B00F02D3E /* porcupine_params.pv in Resources */ = {isa = PBXBuildFile; fileRef = E336A8DF2664152B00F02D3E /* porcupine_params.pv */; };
 		E336A8E22664153600F02D3E /* intent.rhn in Resources */ = {isa = PBXBuildFile; fileRef = E336A8E12664153600F02D3E /* intent.rhn */; };
+		E345698D2669AF9A003FA8B2 /* SwiftSpeech in Frameworks */ = {isa = PBXBuildFile; productRef = E345698C2669AF9A003FA8B2 /* SwiftSpeech */; };
 		E39E48BA2663E7BA00439225 /* rhino_params.pv in Resources */ = {isa = PBXBuildFile; fileRef = E39E48B82663E7BA00439225 /* rhino_params.pv */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E345698D2669AF9A003FA8B2 /* SwiftSpeech in Frameworks */,
 				A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -127,6 +128,9 @@
 			dependencies = (
 			);
 			name = App;
+			packageProductDependencies = (
+				E345698C2669AF9A003FA8B2 /* SwiftSpeech */,
+			);
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* App.app */;
 			productType = "com.apple.product-type.application";
@@ -156,6 +160,9 @@
 				Base,
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
+			packageReferences = (
+				E345697F2669A995003FA8B2 /* XCRemoteSwiftPackageReference "SwiftSpeech" */,
+			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -170,7 +177,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E335C3C82666A7BF00F03F9A /* hey_yesflow_keyword_ios.ppn in Resources */,
 				E336A8E22664153600F02D3E /* intent.rhn in Resources */,
 				E336A8E02664152B00F02D3E /* porcupine_params.pv in Resources */,
 				E39E48BA2663E7BA00439225 /* rhino_params.pv in Resources */,
@@ -355,7 +361,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -367,9 +374,37 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5XPF5BTF2F;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Capacitor\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorApp\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorCordova\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorFilesystem\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorStorage\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorYesflowSharecontact\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorYesflowSpeech\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorYesflowWakeword\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CordovaPlugins\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Porcupine-iOS\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Rhino-iOS\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/SwiftyJSON\"",
+					"\"${PODS_ROOT}/AudioKit\"",
+					"\"${PODS_ROOT}/Porcupine-iOS/lib/ios\"",
+					"\"${PODS_ROOT}/Rhino-iOS/lib/ios\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/AudioKit\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/CAudioKit\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/PvPorcupine\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/PvRhino\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/STK\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/soundpipe\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/sporth\"",
+				);
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yesflow.mobilespeech;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -388,7 +423,10 @@
 				DEVELOPMENT_TEAM = 5XPF5BTF2F;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yesflow.mobilespeech;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
@@ -419,6 +457,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E345697F2669A995003FA8B2 /* XCRemoteSwiftPackageReference "SwiftSpeech" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Cay-Zhang/SwiftSpeech.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E345698C2669AF9A003FA8B2 /* SwiftSpeech */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E345697F2669A995003FA8B2 /* XCRemoteSwiftPackageReference "SwiftSpeech" */;
+			productName = SwiftSpeech;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 504EC2FC1FED79650016851F /* Project object */;
 }

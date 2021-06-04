@@ -69,7 +69,7 @@ export interface CapacitorYesflowSpeechPlugin {
   getCurrentState(): Promise<{ state: string }>;
   getLastResult(): Promise<{ result: any }>;
 
-  start(options?: UtteranceOptions): Promise<void>;
+  start(options?: UtteranceOptions): Promise<any>;
   stop(): Promise<void>;
   restart(): Promise<void>;
   getSupportedLanguages(): Promise<{ languages: any[] }>;

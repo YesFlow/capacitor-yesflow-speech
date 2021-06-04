@@ -8,6 +8,7 @@
 
 import UIKit
 
+@available(iOS 13.0, *)
 class AudioVisualizerView: UIView {
     
     // Bar width
@@ -77,15 +78,15 @@ class AudioVisualizerView: UIView {
             if i % 2 == 1 {
                 oneY = m - v
                 twoY = m - v
-                twoS = -180.degreesToRadians
-                twoE = 0.degreesToRadians
+                twoS = deg2rad(-180)
+                twoE = deg2rad(0)
                 twoC = false
             }
             else {
                 oneY = m + v
                 twoY = m + v
-                twoS = 180.degreesToRadians
-                twoE = 0.degreesToRadians
+                twoS = deg2rad(180)
+                twoE = deg2rad(0)
                 twoC = true
             }
             context.move(to: CGPoint(x: oneX, y: m))
@@ -95,6 +96,10 @@ class AudioVisualizerView: UIView {
             context.strokePath()
             bar += 1
         }
+    }
+    
+    func deg2rad(_ number: Double) -> CGFloat {
+        return CGFloat((number * .pi / 180))
     }
 
 }

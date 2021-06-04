@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { SpeechState } from '@capacitor-yesflow/speech';
+import { CapacitorYesflowSpeech, SpeechState } from '@capacitor-yesflow/speech';
 import { ModalController } from '@ionic/angular';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -35,9 +35,34 @@ export class SpeechButtonComponent implements OnInit, OnDestroy {
 
   onRecordClick(event:any = null) {
     this.micDisabled = true;
-    this.launchSpeech().then(()=>{
-      this.subscribeToSpeechState();
+    // this.launchSpeech().then(()=>{
+    //   this.subscribeToSpeechState();
+    // })
+    this.getSpeechNativeIOS().then((results)=>{
+      console.log('SpeechFromRecord', results);
+      if (results.data && results.data.length > 0) {
+        this.speechResultsEvent.emit(results.data);
+      }
+      this.micDisabled = false;
     })
+  }
+
+  getDefaultSpeechOptions() {
+    let options = {
+      language: 'en-US',
+      maxResults: 5,
+      prompt: '',
+      popup: false,
+      partialResults: true,
+      sendVisualizationUpdates: true
+    };
+    return options;
+  }
+
+  async getSpeechNativeIOS() {
+    const options = this.getDefaultSpeechOptions();
+    const result = await CapacitorYesflowSpeech.start(options);
+    return result;
   }
 
   getSpeechButtondIsDisabled() {

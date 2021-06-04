@@ -55,7 +55,7 @@ export class CapacitorYesflowSpeechWeb
       },
     };
   }
-  async start(options?: UtteranceOptions): Promise<void> {
+  async start(options?: UtteranceOptions): Promise<any> {
     console.log('Started', options);
     if (this.isMock) {this.sendFakeMessages()}
     this.browserInitSpeechRecognition(options?.partialResults);

@@ -1,20 +1,11 @@
 import AVFoundation
 import Capacitor
 import Speech
+import SwiftUI
+import UIKit
+
 
 @objc public class CapacitorYesflowSpeech: NSObject, SFSpeechRecognizerDelegate {
-    private weak var speechRecognizer : SFSpeechRecognizer?
-
-    var recorderViewController: RecorderViewController?
-    
-    @objc var viewController: RecorderViewController? {
-        return recorderViewController
-    }
-    
-    override init() {
-        super.init()
-        self.speechRecognizer?.delegate = self
-    }
 
     @objc public func echo(_ value: String) -> String {
         print ("CapacitorYesflowSpeech: echoCalled")
@@ -31,9 +22,15 @@ import Speech
         return languagesArr
     }
     
-    @objc public func showRecorderVisual() -> Bool {
-        recorderViewController = RecorderViewController()
-        return true
-    }
+
+    
+    
+
+    public struct ViewModifiers { }
+    public struct RecorderViews { }
+    internal struct EnvironmentKeys { }
+    
+    /// Change this when the app starts to configure the default animation used for all record on hold functional components.
+    public static var defaultAnimation: Animation = .interactiveSpring()
     
 }

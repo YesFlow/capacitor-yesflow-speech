@@ -50,11 +50,12 @@ export class HomePage implements OnInit {
     }
   }
 
-  onSpeechResultsEvent(data:any) {
-    console.log('HomePage: SpeechResultsEvent',data);
+  onSpeechResultsEvent(result:any) {
+    console.log('HomePage: SpeechResultsEvent',result);
     this.shouldListenToWakeWord = true;
     this.data = this.data || '';
-    this.data += data?.result?.length > 0 ? data.result : '';
+    let resultText = result?.length > 0 ? result : (result?.data?.length > 0 ? result.data : '');
+    this.data += resultText;
   }
 
   async runYesflowSpeechEcho() {

@@ -3,6 +3,8 @@ import Capacitor
 import AVFoundation
 import Speech
 import Accelerate
+import UIKit
+import SwiftUI
 
 public class JSDate {
     static func toString(_ date: Date) -> String {
@@ -52,6 +54,7 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
     private var sendVisualizationUpdates: Bool = false;
     private var pauseVisualizationUpdates: Bool = false;
     private var frameSendCount: Int = 0;
+
 //    private var recorderViewController: RecorderViewController?
 //    private var audioView : AudioVisualizerView?
     private let implementation = CapacitorYesflowSpeech()
@@ -67,7 +70,10 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
                 self?.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_UNKNOWN);
             }
         }
-//        self.recorderViewController = RecorderViewController()
+        
+
+
+        //        self.recorderViewController = RecorderViewController()
 //        self.audioView = self.recorderViewController?.audioView
     }
     deinit {
@@ -142,14 +148,36 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
     @objc func restart(_ call: CAPPluginCall) {
         if (self.audioEngine != nil) {
             self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_RESTARTING)
-            self.stopListening()
+//            self.stopListening()
         }
         call.resolve()
         self.pauseVisualizationUpdates = true
         self.start(call)
     }
-
+    
     @objc func start(_ call: CAPPluginCall) {
+        print ("CapacitorYesflowSpeechPlugin: StartCalled")
+        let language: String = call.getString("language") ?? "en-US"
+        let maxResults : Int = call.getInt("maxResults") ?? CapacitorYesflowSpeechPlugin.DEFAULT_MATCHES
+        let partialResults : Bool = call.getBool("partialResults") ?? CapacitorYesflowSpeechPlugin.DEFAULT_PARTIAL_RESULTS
+        self.sendVisualizationUpdates = call.getBool("sendVisualizationUpdates") ?? CapacitorYesflowSpeechPlugin.DEFAULT_SEND_VISUALIZATION_UPDATES
+        
+        call.keepAlive = true
+        DispatchQueue.main.async { [weak self] in
+                var view = CapacitorYesflowSpeech.RecorderViews.WordList()
+                view.presentingVC =  self?.bridge?.viewController
+                view.callingPlugin = call
+                let hostingVC = UIHostingController(rootView: view)
+                self?.bridge?.viewController?.modalPresentationStyle = .fullScreen
+                self?.bridge?.viewController?.present(hostingVC, animated: true, completion: nil)
+        }
+    }
+    
+
+
+    
+
+    @objc func start_old(_ call: CAPPluginCall) {
         print ("CapacitorYesflowSpeechPlugin: StartCalled")
         let language: String = call.getString("language") ?? "en-US"
         let maxResults : Int = call.getInt("maxResults") ?? CapacitorYesflowSpeechPlugin.DEFAULT_MATCHES
@@ -172,6 +200,10 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
             guard let bridge = self.bridge else { return }
 //            guard let recorderViewController = self.recorderViewController else { return }
 //            guard let audioView = self.audioView else { return }
+        
+        //            guard let recorderViewController = self.recorderViewController else { return }
+        //            guard let audioView = self.audioView else { return }
+        
 
             AVAudioSession.sharedInstance().requestRecordPermission { (granted) in
                 if !granted {
@@ -289,7 +321,7 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
     @objc func stop(_ call: CAPPluginCall) {
         print ("CapacitorYesflowSpeechPlugin: stopCalled")
         self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_STOPPING)
-        self.stopListening()
+//        self.stopListening()
         self.handleStateUpdate(state: CapacitorYesflowSpeechPlugin.STATE_STOPPED)
         self.pauseVisualizationUpdates = true
         call.resolve()
@@ -434,16 +466,21 @@ public class CapacitorYesflowSpeechPlugin: CAPPlugin, SFSpeechRecognizerDelegate
         print ("CapacitorYesflowSpeechPlugin: stopListening")
         guard isListening else {return}
         DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async {
-            if self.audioEngine!.isRunning {
-                self.audioEngine?.stop()
-                self.audioEngine?.inputNode.removeTap(onBus: 0)
-                // Indicate that the audio source is finished and no more audio will be appended
-                self.recognitionRequest?.endAudio()
-                self.recognitionRequest = nil
-                self.recognitionTask = nil
-                self.isListening = false
-                self.pauseVisualizationUpdates = true
-            }
+            do {
+
+              
+                    if let audioIsRunning = self.audioEngine?.isRunning {
+                        self.audioEngine?.stop()
+                        self.audioEngine?.inputNode.removeTap(onBus: 0)
+                        // Indicate that the audio source is finished and no more audio will be appended
+                        self.recognitionRequest?.endAudio()
+                        self.recognitionRequest = nil
+                        self.recognitionTask = nil
+                        self.isListening = false
+                        self.pauseVisualizationUpdates = true
+                    }
+
+            } catch {}
         }
     }
     
