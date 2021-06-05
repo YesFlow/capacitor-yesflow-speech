@@ -1,6 +1,6 @@
 {
   "name": "@capacitor-yesflow/speech",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Used to bridge speech to text for web, ios, and android",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

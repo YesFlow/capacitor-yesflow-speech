@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import AVFoundation
 
 public extension CapacitorYesflowSpeech {
     /**
@@ -33,8 +34,11 @@ public extension CapacitorYesflowSpeech {
 public extension CapacitorYesflowSpeech {
     struct RecordButton : View {
         
+        
         @Environment(\.swiftSpeechState) var state: CapacitorYesflowSpeech.State
         @SpeechRecognitionAuthStatus var authStatus
+        var player: AVAudioPlayer?
+        
         
         public init() { }
         
@@ -60,8 +64,34 @@ public extension CapacitorYesflowSpeech {
             }
         }
         
+        mutating func playSound(){
+            let fileName: String
+            switch state {
+                case .recording: fileName = "siri_start"
+                case .pending: fileName = "siri_end"
+                case .cancelling : fileName = "siri_error"
+            }
+            guard let url = Bundle.main.url(forResource: fileName, withExtension: "mp3") else { return }
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+                try AVAudioSession.sharedInstance().setActive(true)
+                
+                /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+                self.player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+                
+                /* iOS 10 and earlier require the following line:
+                player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileTypeMPEGLayer3) */
+                
+                guard let player = player else { return }
+                
+                player.play()
+                
+            } catch let error {
+                print(error.localizedDescription)
+            }
+        }
+        
         public var body: some View {
-            
             ZStack {
                 backgroundColor
                     .animation(.easeOut(duration: 0.2))
@@ -70,136 +100,15 @@ public extension CapacitorYesflowSpeech {
                     .zIndex(0)
                 
                 Image(systemName: state != .cancelling ? "waveform" : "xmark")
-                    .font(.system(size: 30, weight: .medium, design: .default))
+                    .font(.system(size: 15, weight: .medium, design: .default))
                     .foregroundColor(.white)
                     .opacity(state == .recording ? 0.8 : 1.0)
                     .padding(20)
                     .transition(.opacity)
                     .layoutPriority(2)
                     .zIndex(1)
-                
             }
-                .scaleEffect(scale)
-                .shadow(color: Color(.sRGBLinear, white: 0, opacity: 0.2), radius: 5, x: 0, y: 3)
-               
-        }
-        
-    }
-    
-    
-    struct CancelButton : View {
-        @Environment(\.swiftSpeechState) var state: CapacitorYesflowSpeech.State
-        @SpeechRecognitionAuthStatus var authStatus
-        
-        public init() { }
-        
-        var backgroundColor: Color {
-            switch state {
-            default:
-                return .blue
-            }
-        }
-        
- 
-        
-        
-        public var body: some View {
-            ZStack {
-                backgroundColor
-                    .animation(.easeOut(duration: 0.2))
-                    .clipShape(Circle())
-                    .environment(\.isEnabled, $authStatus)  // When isEnabled is false, the accent color is gray and all user interactions are disabled inside the view.
-                    .zIndex(0)
-                
-                Image(systemName: "xmark.circle")
-                    .font(.system(size: 30, weight: .medium, design: .default))
-                    .foregroundColor(.white)
-                    .opacity(state == .recording ? 0.8 : 1.0)
-                    .padding(20)
-                    .transition(.opacity)
-                    .layoutPriority(2)
-                    .zIndex(1)
-                
-            }
-            .shadow(color: Color(.sRGBLinear, white: 0, opacity: 0.2), radius: 5, x: 0, y: 3)
-        }
-    }
-    
-    struct SendButton : View {
-        @Environment(\.swiftSpeechState) var state: CapacitorYesflowSpeech.State
-        @Environment(\.presentationMode) var presentationMode
-        
-        @SpeechRecognitionAuthStatus var authStatus
-        
-        public init() { }
-        
-        var backgroundColor: Color {
-            switch state {
-            default:
-                return .blue
-            }
-        }
-        
-
-        
-        public var body: some View {
-            Button(action: {
-                self.presentationMode.wrappedValue.dismiss()
-                }, label: {Text("Send")})
-        
-            ZStack {
-                backgroundColor
-                    .animation(.easeOut(duration: 0.2))
-                    .clipShape(Circle())
-                    .environment(\.isEnabled, $authStatus)  // When isEnabled is false, the accent color is gray and all user interactions are disabled inside the view.
-                    .zIndex(0)
-                
-                Image(systemName: "paperplane")
-                    .font(.system(size: 30, weight: .medium, design: .default))
-                    .foregroundColor(.white)
-                    .opacity(state == .recording ? 0.8 : 1.0)
-                    .padding(20)
-                    .transition(.opacity)
-                    .layoutPriority(2)
-                    .zIndex(1)
-                
-            }
-            .shadow(color: Color(.sRGBLinear, white: 0, opacity: 0.2), radius: 5, x: 0, y: 3)
-        }
-    }
-    
-    
-    struct UndoButton : View {
-        @Environment(\.swiftSpeechState) var state: CapacitorYesflowSpeech.State
-        @SpeechRecognitionAuthStatus var authStatus
-        
-        public init() { }
-        
-        var backgroundColor: Color {
-            switch state {
-            default:
-                return .blue
-            }
-        }
-        
-        public var body: some View {
-            ZStack {
-                backgroundColor
-                    .animation(.easeOut(duration: 0.2))
-                    .clipShape(Circle())
-                    .environment(\.isEnabled, $authStatus)  // When isEnabled is false, the accent color is gray and all user interactions are disabled inside the view.
-                    .zIndex(0)
-                
-                Image(systemName: "undo")
-                    .font(.system(size: 30, weight: .medium, design: .default))
-                    .foregroundColor(.white)
-                    .opacity(state == .recording ? 0.8 : 1.0)
-                    .padding(20)
-                    .transition(.opacity)
-                    .layoutPriority(2)
-                    .zIndex(1)
-                
-            }
+            .scaleEffect(scale)
             .shadow(color: Color(.sRGBLinear, white: 0, opacity: 0.2), radius: 5, x: 0, y: 3)
         }
     }

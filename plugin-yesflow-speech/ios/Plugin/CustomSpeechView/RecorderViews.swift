@@ -4,18 +4,32 @@ import Speech
 import UIKit
 import Capacitor
 
+@available(iOS 14.0, *)
 public extension CapacitorYesflowSpeech.RecorderViews {
 
+    
+    struct WordRow: View {
+        public var body: some View {
+            Text("TEST")
+        }
+    }
+
+    
     struct WordList : View {
         @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
         @Environment(\.swiftSpeechState) var state: CapacitorYesflowSpeech.State
         @Environment(\.actionsOnSendFinalText) var finalText: CapacitorYesflowSpeech.FinalText
         
         var presentingVC: UIViewController?
-        var sessionConfiguration: CapacitorYesflowSpeech.Session.Configuration
         var callingPlugin: CAPPluginCall?
         
+        var sessionConfiguration: CapacitorYesflowSpeech.Session.Configuration
+
         @State var list: [(session: CapacitorYesflowSpeech.Session, text: String)] = []
+        @State private var text = "Hold to start speech"
+        @State var activeComponent: Component? = .none
+        
+        var color: Color? = .blue
         
         public init(sessionConfiguration: CapacitorYesflowSpeech.Session.Configuration) {
             self.sessionConfiguration = sessionConfiguration
@@ -29,13 +43,25 @@ public extension CapacitorYesflowSpeech.RecorderViews {
             self.init(locale: Locale(identifier: localeIdentifier))
         }
         
+        var isRecording: Bool { state == .recording }
+        
+        var isSpeechActive: Bool { activeComponent == .speech }
+        var isCancelActive: Bool { activeComponent == .cancel }
+        var isConvertActive: Bool { activeComponent == .convert }
+        
+        enum Component {
+            case speech, cancel, convert
+        }
+
         public func consolidateText() {
-            let stringArray = list.map{ String($0.text) }
-            let text = stringArray.joined(separator: " ")
-            let session = list.last!.session as CapacitorYesflowSpeech.Session
-            list.removeAll()
-            let newItem = (session, text)
-            list.append(newItem)
+            if (list.count > 0) {
+                let stringArray = list.map{ String($0.text) }
+                let text = stringArray.joined(separator: " ")
+                let session = list.last!.session as CapacitorYesflowSpeech.Session
+                list.removeAll()
+                let newItem = (session, text)
+                list.append(newItem)
+            }
         }
         
         public func createBlankItem(session: CapacitorYesflowSpeech.Session) {
@@ -94,46 +120,29 @@ public extension CapacitorYesflowSpeech.RecorderViews {
             }
             self.dismiss()
         }
-        
 
         public var body: some View {
-            NavigationView {
-                SwiftUI.List {
-                    ForEach(list, id: \.session.id) { pair in
-                        HStack {
+            NavigationView{
+                List {
+                      ForEach(list, id: \.session.id) { pair in
+                          HStack {
                           Text(pair.text)
                           Spacer()
-                        }
-                    }.onMove(perform: relocate)
-                }.overlay(
-                    HStack() {
-                        Button(action: {
-                            undoLastItem()
-                         }, label: {
-                             Text("Undo")
-                         })
-                        Button(action: {
-                            consolidateText()
-                        }, label: {
-                            Text("Combine")
-                        })
-                     }.padding(50),
-                    alignment: .bottomLeading
+                          }
+                      }
+                      .onDelete(perform: delete)
+                      .onMove(perform: relocate)
+                }
+                .overlay(
+                    Button(action:{ consolidateText()}) {
+                        CollapseIcon()
+                            .background(Color.blue)
+                            .foregroundColor(Color.white)
+                            .cornerRadius(40)
+                    },alignment: .bottomLeading
                 )
                 .overlay(
                     CapacitorYesflowSpeech.RecordButton()
-//                        .swiftSpeechToggleRecordingOnTap(
-//                            sessionConfiguration: sessionConfiguration,
-//                            animation: .spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0)
-//                        ).onStartRecording {session in
-//                            createBlankItem(session: session)
-//                        }.onCancelRecording { session in
-//                            cancelLastItem(session: session)
-//                        }.onRecognize(includePartialResults: true) { session, result in
-//                            recognizeItem(session: session, result: result)
-//                        } handleError: { session, error in
-//                            errorItem(session: session, error: error)
-//                        }.padding(20),alignment: .bottom
                         .swiftSpeechRecordOnHold(
                             sessionConfiguration: sessionConfiguration,
                             animation: .spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0),
@@ -146,46 +155,100 @@ public extension CapacitorYesflowSpeech.RecorderViews {
                             recognizeItem(session: session, result: result)
                         } handleError: { session, error in
                             errorItem(session: session, error: error)
-                        }.padding(20),alignment: .bottom
+                        },alignment: .bottom
+                ).overlay(
+                    Button(action:{ sendText()}) {
+                        SendIcon()
+                            .background(Color.blue)
+                            .foregroundColor(Color.white)
+                            .cornerRadius(40)
+                    }
+                    ,alignment: .bottomTrailing
                 )
-                .overlay(
-                     Button(action: {
-                       sendText()
-                     }, label: {
-                         Text("Send")
-                     }).padding(50),
-                    alignment: .bottomTrailing
-                )
-                .navigationBarTitle(Text("Speech"))
+                
+                .navigationBarTitle("Speech To Text",displayMode: .inline)
                 .navigationBarItems(
                     leading: Button(action: {
-                        cancel()
-                    },label: {
-                        Text("Close (x)")
-                    }),
-                    trailing: EditButton()
+                        self.cancel()
+                    }, label: { Text("Cancel") }),
+                    trailing: EditButton().disabled(list.isEmpty)
                 )
+                
             }.onAppear {
                 CapacitorYesflowSpeech.requestSpeechRecognitionAuthorization()
             }
-
-        }
-        
-        func handleNotifySpeechResult(resultText: Any, resultArray: NSMutableArray?, isFinal: Bool, isError: Bool, errorMessage: String?) {
-            print ("CapacitorYesflowSpeechPlugin: handleNotifySpeechResult")
-            let result = [
-                "resultText": resultText,
-                "resultsArray": resultArray as Any,
-                "isFinal": isFinal,
-                "isError": isError,
-                "errorMessage": errorMessage!
-            ] as [String : Any]
             
-            if (self.callingPlugin != nil) {
-                self.callingPlugin?.keepAlive = true
-            }
         }
-        
+        public var body2: some View {
+            NavigationView {
+                      List {
+                            ForEach(list, id: \.session.id) { pair in
+                                HStack {
+                                Text(pair.text)
+                                Spacer()
+                                }
+                            }.onMove(perform: relocate)
+                        .overlay(
+                            Group {
+                                HStack {
+                                    Button(action:{ undoLastItem()}) {
+                                        UndoIcon()
+                                            .background(Color.blue)
+                                            .foregroundColor(Color.white)
+                                            .cornerRadius(40)
+                                    }
+                                    Button(action:{ consolidateText()}) {
+                                        CollapseIcon()
+                                            .background(Color.blue)
+                                            .foregroundColor(Color.white)
+                                            .cornerRadius(40)
+                                    }
+                                }.padding().environment(\.colorScheme, .light)
+                            },alignment: .bottomLeading
+                        )
+                        .overlay(
+                            CapacitorYesflowSpeech.RecordButton()
+                                .swiftSpeechRecordOnHold(
+                                    sessionConfiguration: sessionConfiguration,
+                                    animation: .spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0),
+                                    distanceToCancel: 100.0
+                                ).onStartRecording { session in
+                                    createBlankItem(session: session)
+                                }.onCancelRecording { session in
+                                    cancelLastItem(session: session)
+                                }.onRecognize(includePartialResults: true) { session, result in
+                                    recognizeItem(session: session, result: result)
+                                } handleError: { session, error in
+                                    errorItem(session: session, error: error)
+                                },alignment: .bottom
+                        )
+                        .overlay(
+                            Group {
+                                HStack {
+                                    Button(action:{ sendText()}) {
+                                        SendIcon()
+                                            .background(Color.blue)
+                                            .foregroundColor(Color.white)
+                                            .cornerRadius(40)
+                                    }
+                                }.padding().environment(\.colorScheme, .light)
+                            },alignment: .bottomTrailing
+                        )
+
+                      .onAppear {
+                        CapacitorYesflowSpeech.requestSpeechRecognitionAuthorization()
+                      }
+                }
+            }.navigationBarTitle("Speech to Text")
+              .navigationBarItems(leading:
+                  Button("Edit") {
+                      print("About tapped!")
+                      }
+              ).navigationBarBackButtonHidden(true)
+            
+            
+        }
+      
         
         func dismiss() -> Void {
             self.presentingVC!.dismiss(animated: true)
@@ -193,6 +256,10 @@ public extension CapacitorYesflowSpeech.RecorderViews {
 
         func relocate(from source: IndexSet, to destination: Int) {
              list.move(fromOffsets: source, toOffset: destination)
+        }
+        
+        func delete(at offsets: IndexSet) {
+            list.remove(atOffsets: offsets)
         }
 
     }

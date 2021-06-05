@@ -1,0 +1,28 @@
+{
+	"appId": "com.yesflow.mobilespeech",
+	"appName": "speechui-test",
+	"webDir": "www",
+	"$schema": false,
+	"npmClient": "npm",
+	"bundledWebRuntime": false,
+	"server": {
+		"cleartext": true
+	},
+	"plugins": {
+		"Keyboard": {
+			"resize": "native"
+		},
+		"SplashScreen": {
+			"launchShowDuration": 0,
+			"autoHide": true
+		},
+		"PushNotifications": {
+			"presentationOptions": [
+				"badge",
+				"sound",
+				"alert"
+			]
+		}
+	},
+	"cordova": {}
+}

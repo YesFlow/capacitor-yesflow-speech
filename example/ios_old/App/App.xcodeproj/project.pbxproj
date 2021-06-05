@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,11 @@
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
+		E3085515266124C3000921C1 /* CustomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3085514266124C3000921C1 /* CustomViewController.swift */; };
+		E336A8E02664152B00F02D3E /* porcupine_params.pv in Resources */ = {isa = PBXBuildFile; fileRef = E336A8DF2664152B00F02D3E /* porcupine_params.pv */; };
+		E336A8E22664153600F02D3E /* intent.rhn in Resources */ = {isa = PBXBuildFile; fileRef = E336A8E12664153600F02D3E /* intent.rhn */; };
+		E345698D2669AF9A003FA8B2 /* SwiftSpeech in Frameworks */ = {isa = PBXBuildFile; productRef = E345698C2669AF9A003FA8B2 /* SwiftSpeech */; };
+		E39E48BA2663E7BA00439225 /* rhino_params.pv in Resources */ = {isa = PBXBuildFile; fileRef = E39E48B82663E7BA00439225 /* rhino_params.pv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +34,11 @@
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
-		E3929954266B1FB70064B30F /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
+		E3085514266124C3000921C1 /* CustomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomViewController.swift; sourceTree = "<group>"; };
+		E335C3C72666A7BF00F03F9A /* hey_yesflow_keyword_ios.ppn */ = {isa = PBXFileReference; lastKnownFileType = file; name = hey_yesflow_keyword_ios.ppn; path = App/public/assets/wakeword/hey_yesflow_keyword_ios.ppn; sourceTree = "<group>"; };
+		E336A8DF2664152B00F02D3E /* porcupine_params.pv */ = {isa = PBXFileReference; lastKnownFileType = file; name = porcupine_params.pv; path = App/public/assets/wakeword/porcupine_params.pv; sourceTree = "<group>"; };
+		E336A8E12664153600F02D3E /* intent.rhn */ = {isa = PBXFileReference; lastKnownFileType = file; name = intent.rhn; path = App/public/assets/wakeword/intent.rhn; sourceTree = "<group>"; };
+		E39E48B82663E7BA00439225 /* rhino_params.pv */ = {isa = PBXFileReference; lastKnownFileType = file; name = rhino_params.pv; path = App/public/assets/wakeword/rhino_params.pv; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -38,6 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E345698D2669AF9A003FA8B2 /* SwiftSpeech in Frameworks */,
 				A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -56,6 +66,10 @@
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
+				E335C3C72666A7BF00F03F9A /* hey_yesflow_keyword_ios.ppn */,
+				E336A8E12664153600F02D3E /* intent.rhn */,
+				E336A8DF2664152B00F02D3E /* porcupine_params.pv */,
+				E39E48B82663E7BA00439225 /* rhino_params.pv */,
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
 				7F8756D8B27F46E3366F6CEA /* Pods */,
@@ -74,7 +88,6 @@
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
-				E3929954266B1FB70064B30F /* App.entitlements */,
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
@@ -83,6 +96,7 @@
 				504EC3131FED79650016851F /* Info.plist */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
+				E3085514266124C3000921C1 /* CustomViewController.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -114,6 +128,9 @@
 			dependencies = (
 			);
 			name = App;
+			packageProductDependencies = (
+				E345698C2669AF9A003FA8B2 /* SwiftSpeech */,
+			);
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* App.app */;
 			productType = "com.apple.product-type.application";
@@ -143,6 +160,9 @@
 				Base,
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
+			packageReferences = (
+				E345697F2669A995003FA8B2 /* XCRemoteSwiftPackageReference "SwiftSpeech" */,
+			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -157,6 +177,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E336A8E22664153600F02D3E /* intent.rhn in Resources */,
+				E336A8E02664152B00F02D3E /* porcupine_params.pv in Resources */,
+				E39E48BA2663E7BA00439225 /* rhino_params.pv in Resources */,
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
 				50B271D11FEDC1A000F3C39B /* public in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
@@ -210,6 +233,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
+				E3085515266124C3000921C1 /* CustomViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,7 +307,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -334,10 +358,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -347,12 +372,39 @@
 			baseConfigurationReference = FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5XPF5BTF2F;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Capacitor\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorApp\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorCordova\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorFilesystem\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorStorage\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorYesflowSharecontact\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorYesflowSpeech\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CapacitorYesflowWakeword\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CordovaPlugins\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Porcupine-iOS\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Rhino-iOS\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/SwiftyJSON\"",
+					"\"${PODS_ROOT}/AudioKit\"",
+					"\"${PODS_ROOT}/Porcupine-iOS/lib/ios\"",
+					"\"${PODS_ROOT}/Rhino-iOS/lib/ios\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/AudioKit\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/CAudioKit\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/PvPorcupine\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/PvRhino\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/STK\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/soundpipe\"",
+					"\"${PODS_XCFRAMEWORKS_BUILD_DIR}/sporth\"",
+				);
 				INFOPLIST_FILE = App/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yesflow.mobilespeech;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -367,12 +419,14 @@
 			baseConfigurationReference = AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5XPF5BTF2F;
 				INFOPLIST_FILE = App/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yesflow.mobilespeech;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
@@ -403,6 +457,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E345697F2669A995003FA8B2 /* XCRemoteSwiftPackageReference "SwiftSpeech" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Cay-Zhang/SwiftSpeech.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E345698C2669AF9A003FA8B2 /* SwiftSpeech */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E345697F2669A995003FA8B2 /* XCRemoteSwiftPackageReference "SwiftSpeech" */;
+			productName = SwiftSpeech;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 504EC2FC1FED79650016851F /* Project object */;
 }

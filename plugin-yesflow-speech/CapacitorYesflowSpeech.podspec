@@ -11,8 +11,15 @@ Pod::Spec.new do |s|
   s.author = package['author']
   s.source = { :git => package['repository']['url'], :tag => s.version.to_s }
   s.source_files = 'ios/Plugin/**/*.{swift,h,m,c,cc,mm,cpp}'
+  s.resources = ['Resources/*.mp3', 'Resources/*.aiff']
   s.ios.deployment_target  = '14.0'
+  s.static_framework = true
   s.dependency 'Capacitor'
   s.dependency 'SwiftyJSON'
+  s.dependency 'AudioKit'
+  s.dependency 'Spokestack-iOS'
+  s.dependency 'TensorFlowLiteC'
+  s.dependency 'TensorFlowLiteSwift'
+  s.dependency 'filter_audio'
   s.swift_version = '5.1'
 end
