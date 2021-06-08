@@ -44,89 +44,90 @@ public extension CapacitorYesflowSpeech {
 public extension CapacitorYesflowSpeech.ViewModifiers {
     
     struct RecordOnHold : ViewModifier {
-        public init(sessionConfiguration: CapacitorYesflowSpeech.Session.Configuration = CapacitorYesflowSpeech.Session.Configuration(), animation: Animation = CapacitorYesflowSpeech.defaultAnimation, distanceToCancel: CGFloat = 50.0) {
-            self.sessionConfiguration = sessionConfiguration
-            self.animation = animation
-            self.distanceToCancel = distanceToCancel
-        }
-        
-        var sessionConfiguration: CapacitorYesflowSpeech.Session.Configuration
-        var animation: Animation
-        var distanceToCancel: CGFloat
-        
-        @SpeechRecognitionAuthStatus var authStatus
-        
+           public init(sessionConfiguration: CapacitorYesflowSpeech.Session.Configuration = CapacitorYesflowSpeech.Session.Configuration(), animation: Animation = CapacitorYesflowSpeech.defaultAnimation, distanceToCancel: CGFloat = 50.0) {
+               self.sessionConfiguration = sessionConfiguration
+               self.animation = animation
+               self.distanceToCancel = distanceToCancel
+           }
+           
+           var sessionConfiguration: CapacitorYesflowSpeech.Session.Configuration
+           var animation: Animation
+           var distanceToCancel: CGFloat
+           
+           @SpeechRecognitionAuthStatus var authStatus
+           
 
-        @State var recordingSession: CapacitorYesflowSpeech.Session? = nil
-        @State var viewComponentState: CapacitorYesflowSpeech.State = .pending
-        @State var finalText: CapacitorYesflowSpeech.FinalText? = nil
+           @State var recordingSession: CapacitorYesflowSpeech.Session? = nil
+           @State var viewComponentState: CapacitorYesflowSpeech.SpeechState = .pending
+           
+           var delegate = CapacitorYesflowSpeech.FunctionalComponentDelegate()
+           
+           var gesture: some Gesture {
+               let longPress = LongPressGesture(minimumDuration: 60)
+                   .onChanged { _ in
+                       withAnimation(self.animation, self.startRecording)
+                   }
+               
+               let drag = DragGesture(minimumDistance: 0)
+                   .onChanged { value in
+                       withAnimation(self.animation) {
+                           if value.translation.height < -self.distanceToCancel {
+                               self.viewComponentState = .cancelling
+                           } else {
+                               self.viewComponentState = .recording
+                           }
+                       }
+                   }
+                   .onEnded { value in
+                       if value.translation.height < -self.distanceToCancel {
+                           withAnimation(self.animation, self.cancelRecording)
+                       } else {
+                           withAnimation(self.animation, self.endRecording)
+                       }
+                   }
+               
+               return longPress.simultaneously(with: drag)
+           }
+           
+           public func body(content: Content) -> some View {
+               content
+                   .gesture(gesture, including: $authStatus ? .gesture : .none)
+                   .environment(\.swiftSpeechState, viewComponentState)
+           }
+           
+            public func autoStartRecording() {
+                self.startRecording()
+            }
         
-        var delegate = CapacitorYesflowSpeech.FunctionalComponentDelegate()
         
-        var gesture: some Gesture {
-            let longPress = LongPressGesture(minimumDuration: 60)
-                .onChanged { _ in
-                    withAnimation(self.animation, self.startRecording)
-                }
-            
-            let drag = DragGesture(minimumDistance: 0)
-                .onChanged { value in
-                    withAnimation(self.animation) {
-                        if value.translation.height < -self.distanceToCancel {
-                            self.viewComponentState = .cancelling
-                        } else {
-                            self.viewComponentState = .recording
-                        }
-                    }
-                }
-                .onEnded { value in
-                    if value.translation.height < -self.distanceToCancel {
-                        withAnimation(self.animation, self.cancelRecording)
-                    } else {
-                        withAnimation(self.animation, self.endRecording)
-                    }
-                }
-            
-            return longPress.simultaneously(with: drag)
-        }
-        
-        public func body(content: Content) -> some View {
-            content
-                .gesture(gesture, including: $authStatus ? .gesture : .none)
-                .environment(\.swiftSpeechState, viewComponentState)
-        }
-        
-        fileprivate func startRecording() {
-            let id = SpeechRecognizer.ID()
-            let session = CapacitorYesflowSpeech.Session(id: id, configuration: sessionConfiguration)
-            // View update
-            self.viewComponentState = .recording
-            self.recordingSession = session
-            delegate.onStartRecording(session: session)
-            session.startRecording()
-        }
-        
-        fileprivate func cancelRecording() {
-            guard let session = recordingSession else { preconditionFailure("recordingSession is nil in \(#function)") }
-            session.cancel()
-            delegate.onCancelRecording(session: session)
-            self.viewComponentState = .pending
-            self.recordingSession = nil
-        }
-        
-        fileprivate func endRecording() {
-            guard let session = recordingSession else { preconditionFailure("recordingSession is nil in \(#function)") }
-            recordingSession?.stopRecording()
-            delegate.onStopRecording(session: session)
-            self.viewComponentState = .pending
-            self.recordingSession = nil
-        }
-        
-    }
-    
-    /**
-     `viewComponentState` will never be `.cancelling` here.
-     */
+           fileprivate func startRecording() {
+               let id = SpeechRecognizer.ID()
+               let session = CapacitorYesflowSpeech.Session(id: id, configuration: sessionConfiguration)
+               // View update
+               self.viewComponentState = .recording
+               self.recordingSession = session
+               delegate.onStartRecording(session: session)
+               session.startRecording()
+           }
+           
+           fileprivate func cancelRecording() {
+               guard let session = recordingSession else { preconditionFailure("recordingSession is nil in \(#function)") }
+               session.cancel()
+               delegate.onCancelRecording(session: session)
+               self.viewComponentState = .pending
+               self.recordingSession = nil
+           }
+           
+           fileprivate func endRecording() {
+               guard let session = recordingSession else { preconditionFailure("recordingSession is nil in \(#function)") }
+               recordingSession?.stopRecording()
+               delegate.onStopRecording(session: session)
+               self.viewComponentState = .pending
+               self.recordingSession = nil
+           }
+           
+       }
+           
     struct ToggleRecordingOnTap : ViewModifier {
         public init(sessionConfiguration: CapacitorYesflowSpeech.Session.Configuration = CapacitorYesflowSpeech.Session.Configuration(), animation: Animation = CapacitorYesflowSpeech.defaultAnimation) {
             self.sessionConfiguration = sessionConfiguration
@@ -140,7 +141,7 @@ public extension CapacitorYesflowSpeech.ViewModifiers {
         
 
         @State var recordingSession: CapacitorYesflowSpeech.Session? = nil
-        @State var viewComponentState: CapacitorYesflowSpeech.State = .pending
+        @State var viewComponentState: CapacitorYesflowSpeech.SpeechState = .pending
         
         var delegate = CapacitorYesflowSpeech.FunctionalComponentDelegate()
         
@@ -161,6 +162,11 @@ public extension CapacitorYesflowSpeech.ViewModifiers {
             content
                 .gesture(gesture, including: $authStatus ? .gesture : .none)
                 .environment(\.swiftSpeechState, viewComponentState)
+            
+        }
+        
+        public func autoStartRecording() {
+            self.startRecording()
         }
         
         fileprivate func startRecording() {

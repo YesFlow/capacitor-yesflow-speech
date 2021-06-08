@@ -6,9 +6,12 @@ import Capacitor
 
 @available(iOS 14.0, *)
 public extension CapacitorYesflowSpeech.RecorderViews {
+  
+
+    
     struct WordList : View {
         @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-        @Environment(\.swiftSpeechState) var state: CapacitorYesflowSpeech.State
+        @Environment(\.swiftSpeechState) var swiftSpeechState: CapacitorYesflowSpeech.SpeechState
         @Environment(\.actionsOnSendFinalText) var finalText: CapacitorYesflowSpeech.FinalText
         
         
@@ -18,10 +21,9 @@ public extension CapacitorYesflowSpeech.RecorderViews {
         var sessionConfiguration: CapacitorYesflowSpeech.Session.Configuration
 
         @State var list: [(session: CapacitorYesflowSpeech.Session, text: String)] = []
-        @State private var text = "Hold to start speech"
         @State var activeComponent: Component? = .none
         @State var isRecording: Bool = false
-        
+                 
         var color: Color? = .blue
         
         public init(sessionConfiguration: CapacitorYesflowSpeech.Session.Configuration) {
@@ -36,11 +38,13 @@ public extension CapacitorYesflowSpeech.RecorderViews {
             self.init(locale: Locale(identifier: localeIdentifier))
         }
         
-        var isNotRecording: Bool { state != .recording }
+        var isNotRecording: Bool { swiftSpeechState != .recording }
         
         var isSpeechActive: Bool { activeComponent == .speech }
         var isCancelActive: Bool { activeComponent == .cancel }
         var isConvertActive: Bool { activeComponent == .convert }
+        
+        var recordingButton: CapacitorYesflowSpeech.RecordButton = CapacitorYesflowSpeech.RecordButton()
         
         enum Component {
             case speech, cancel, convert
@@ -57,14 +61,20 @@ public extension CapacitorYesflowSpeech.RecorderViews {
             }
         }
         
+        public func cleanUpBlankItems() {
+            if (list.count > 0) {
+                list = list.filter({ $0.text.count > 0})
+            }
+        }
+        
         public func createBlankItem(session: CapacitorYesflowSpeech.Session) {
+            cleanUpBlankItems()
             let newItem = (session, "")
             list.append(newItem)
         }
         
         public func cancelLastItem(session: CapacitorYesflowSpeech.Session) {
-            _ = list.firstIndex { $0.session.id == session.id }
-                .map { list.remove(at: $0) }
+            undoLastItem()
         }
         
         public func undoLastItem() {
@@ -75,27 +85,27 @@ public extension CapacitorYesflowSpeech.RecorderViews {
         
         public func recognizeItem(session: CapacitorYesflowSpeech.Session, result: SFSpeechRecognitionResult) {
             let textFromVoice = result.bestTranscription.formattedString
-            let textHasData = (textFromVoice.count > 0)
+            let textHasData = !textFromVoice.isEmpty
             
             list.firstIndex { $0.session.id == session.id }
                 .map { index in
                     if (textHasData) {
                         list[index].text = result.bestTranscription.formattedString + (result.isFinal ? "" : "...")
+                    } else {
+                        if (result.isFinal) {
+                            list.remove(at: index)
+                        }
                     }
                 }
-            if (result.isFinal && !textHasData) {
-                _ = list.firstIndex { $0.session.id == session.id }
-                    .map { list.remove(at: $0) }
-            }
         }
         
         public func errorItem(session: CapacitorYesflowSpeech.Session, error:Error ) {
-//                                        _ = list.firstIndex { $0.session.id == session.id }
-//                                            .map { list.remove(at: $0) }
-//                                        list.firstIndex { $0.session.id == session.id }
-//                                            .map { index in
-//                                                list[index].text = "Error \((error as NSError).code)"
-//                                            }
+            print ("Is error")
+            let index = list.firstIndex { $0.session.id == session.id }
+            if (index! > -1) {
+                list.remove(at: index!)
+            }
+         
         }
         
         public func sendText() {
@@ -113,6 +123,12 @@ public extension CapacitorYesflowSpeech.RecorderViews {
             }
             self.dismiss()
         }
+        
+        public func getButton() {
+            
+        }
+
+        
 
         public var body: some View {
             NavigationView {
@@ -122,7 +138,11 @@ public extension CapacitorYesflowSpeech.RecorderViews {
             
                         }
                         VStack {
-                            Text("Hold the button below & speak")
+                            if (sessionConfiguration.holdToRecord) {
+                                Text("Hold to start speech")
+                            } else {
+                                Text("Click to start speech")
+                            }
                             HintArrowView(arrowheadSize: 6)
                                 .frame(width: 200, height: 150)
                                 .foregroundColor(Color.primary)
@@ -160,42 +180,61 @@ public extension CapacitorYesflowSpeech.RecorderViews {
                     trailing: EditButton().disabled(list.isEmpty)
                 )
                 .overlay(
-                    Button(action:{ consolidateText()}) {
-                    CollapseIcon()
-                        .background(Color.blue)
-                        .foregroundColor(Color.white)
-                        .cornerRadius(40)
-                        .padding(30)
-                    },alignment: .bottomLeading)
-                .overlay(
-                    CapacitorYesflowSpeech.RecordButton().padding(30)
-                    .swiftSpeechRecordOnHold(
-                        sessionConfiguration: sessionConfiguration,
-                        animation: .spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0),
-                        distanceToCancel: 100.0
-                    ).onStartRecording { session in
-                        createBlankItem(session: session)
-                    }.onCancelRecording { session in
-                        cancelLastItem(session: session)
-                    }.onRecognize(includePartialResults: true) { session, result in
-                        recognizeItem(session: session, result: result)
-                    } handleError: { session, error in
-                        errorItem(session: session, error: error)
-                    },alignment: .bottom
-                )
-                .overlay(
-                    Button(action:{ sendText() })
-                    {
-                        SendIcon()
-                            .background(Color.blue)
-                            .foregroundColor(Color.white)
-                            .cornerRadius(40)
-                            .padding(30)
-                    }
-                    ,alignment: .bottomTrailing
+                    HStack() {
+                        Button(action:{ consolidateText()}) {
+                                         CollapseIcon()
+                                             .background(Color.blue)
+                                             .foregroundColor(Color.white)
+                                             .cornerRadius(40)
+                                             .padding(30)
+                                         }
+                        if (self.sessionConfiguration.holdToRecord) {
+                            self.recordingButton.padding(30)
+                            .swiftSpeechRecordOnHold(
+                                sessionConfiguration: sessionConfiguration,
+                                animation: .spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0),
+                                distanceToCancel: 100.0
+                                ).onStartRecording { session in
+                                    createBlankItem(session: session)
+                                }.onCancelRecording { session in
+                                    cancelLastItem(session: session)
+                                }.onRecognize(includePartialResults: true) { session, result in
+                                    recognizeItem(session: session, result: result)
+                                } handleError: { session, error in
+                                    errorItem(session: session, error: error)
+                                }
+                        } else {
+                            self.recordingButton.padding(30)
+                                .swiftSpeechToggleRecordingOnTap(sessionConfiguration: sessionConfiguration,
+                                   animation: .spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0)
+                                ).onStartRecording { session in
+                                    createBlankItem(session: session)
+                                }.onCancelRecording { session in
+                                    cancelLastItem(session: session)
+                                }.onRecognize(includePartialResults: true) { session, result in
+                                    recognizeItem(session: session, result: result)
+                                } handleError: { session, error in
+                                    errorItem(session: session, error: error)
+                                }
+                        }
+                        
+                        Button(action:{ sendText() })
+                                           {
+                                               SendIcon()
+                                                   .background(Color.blue)
+                                                   .foregroundColor(Color.white)
+                                                   .cornerRadius(40)
+                                                   .padding(30)
+                                           }
+                    }, alignment: .bottom
                 )
                 .onAppear {
                     CapacitorYesflowSpeech.requestSpeechRecognitionAuthorization()
+                    if (self.sessionConfiguration.autoStart && !self.sessionConfiguration.holdToRecord) {
+                        print ("Auto Start Requested")
+//                        self.recordingButton.send
+                    }
+                    
                 }
             }
         }

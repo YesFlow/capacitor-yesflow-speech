@@ -8,7 +8,7 @@ public extension CapacitorYesflowSpeech {
      - Note: The availability of speech recognition cannot be determined using the `State`
              and should be attained using `@Environment(\.isSpeechRecognitionAvailable)`.
      */
-    enum State {
+    enum SpeechState {
         /// Indicating there is no recording in progress.
         /// - Note: It's the default value for `@Environment(\.swiftSpeechState)`.
         case pending
@@ -17,7 +17,42 @@ public extension CapacitorYesflowSpeech {
         /// Indicating there is a recording in progress and the user intends to cancel it.
         case cancelling
     }
+    
+    enum PressAndHoldState {
+        case inactive
+        case pressing
+        case longPress
+        
+        var isPressing: Bool {
+            switch self {
+            case .inactive:
+                return false
+            case .pressing, .longPress:
+                return true
+            }
+        }
+        
+        var isLongPress: Bool {
+            switch self {
+            case .inactive, .pressing:
+                return false
+            case .longPress:
+                return true
+            }
+        }
+        
+        var isInactive : Bool {
+            switch self {
+            case .inactive:
+                return true
+            case .pressing, .longPress:
+                return false
+            }
+        }
+    }
 }
+
+
 
 public extension CapacitorYesflowSpeech {
     struct FinalText {
@@ -33,14 +68,10 @@ public extension CapacitorYesflowSpeech {
 
 public extension CapacitorYesflowSpeech {
     struct RecordButton : View {
-        
-        
-        @Environment(\.swiftSpeechState) var state: CapacitorYesflowSpeech.State
+        @Environment(\.swiftSpeechState) var state: CapacitorYesflowSpeech.SpeechState
         @SpeechRecognitionAuthStatus var authStatus
         var player: AVAudioPlayer?
-        
-        
-        public init() { }
+   
         
         var backgroundColor: Color {
             switch state {
@@ -116,6 +147,6 @@ public extension CapacitorYesflowSpeech {
 
 struct RecordButton_Previews: PreviewProvider {
     static var previews: some View {
-        CapacitorYesflowSpeech.RecorderViews.WordList()
+        CapacitorYesflowSpeech.RecordButton()
     }
 }

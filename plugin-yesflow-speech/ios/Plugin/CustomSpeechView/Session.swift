@@ -64,6 +64,10 @@ extension CapacitorYesflowSpeech {
 
 public extension CapacitorYesflowSpeech.Session {
     struct Configuration {
+        
+        public var holdToRecord: Bool = false
+        
+        public var autoStart: Bool = false
         /**
          The locale representing the language you want to use for speech recognition.
          The default value is `.current`.
@@ -91,7 +95,7 @@ public extension CapacitorYesflowSpeech.Session {
         public var shouldReportPartialResults: Bool = true
         
         /// A Boolean value that determines whether a request must keep its audio data on the device.
-        public var requiresOnDeviceRecognition: Bool = false
+        public var requiresOnDeviceRecognition: Bool = true
         
         /**
          An array of phrases that should be recognized, even if they are not in the system vocabulary.
@@ -121,6 +125,9 @@ public extension CapacitorYesflowSpeech.Session {
          */
         public var audioSessionConfiguration: AudioSessionConfiguration = .recordOnly
         
+        
+        public var speechButtonHelpText: String? = nil
+        
         public init(
             locale: Locale = .current,
             taskHint: SFSpeechRecognitionTaskHint = .unspecified,
@@ -128,7 +135,9 @@ public extension CapacitorYesflowSpeech.Session {
             requiresOnDeviceRecognition: Bool = false,
             contextualStrings: [String] = [],
             interactionIdentifier: String? = nil,
-            audioSessionConfiguration: AudioSessionConfiguration = .recordOnly
+            audioSessionConfiguration: AudioSessionConfiguration = .recordOnly,
+            holdToRecord: Bool = false,
+            autoStart: Bool = false
         ) {
             self.locale = locale
             self.taskHint = taskHint
@@ -137,6 +146,9 @@ public extension CapacitorYesflowSpeech.Session {
             self.contextualStrings = contextualStrings
             self.interactionIdentifier = interactionIdentifier
             self.audioSessionConfiguration = audioSessionConfiguration
+            self.holdToRecord = holdToRecord
+            self.autoStart = autoStart
+            self.speechButtonHelpText = self.holdToRecord ? "Hold to start speech" : "Click to start speech"
         }
     }
 }

@@ -15,6 +15,9 @@ export interface UtteranceOptions {
   popup?: boolean;
   partialResults?: boolean;
   sendVisualizationUpdates?: boolean;
+  nativeModeEnabled?: boolean;
+  nativeSpeechHoldForRecord?:  boolean;
+  autoStart?:  boolean;
 }
 
 export interface SpeechResultListenerEvent {

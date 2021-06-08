@@ -79,7 +79,8 @@ public class SpeechRecognizer {
 
             do {
                 let audioSession = AVAudioSession.sharedInstance()
-                try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+                try audioSession.setCategory(.record, mode: .measurement, options: [.duckOthers, .defaultToSpeaker])
+                try audioSession.setMode(AVAudioSession.Mode.default)
                 try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
                 let inputNode = audioEngine.inputNode
 
